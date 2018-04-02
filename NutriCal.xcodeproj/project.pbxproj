@@ -37,6 +37,8 @@
 		34BAB23520719B9100E39E8B /* FilterCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BAB23420719B9100E39E8B /* FilterCell.swift */; };
 		34BAB23720719BB900E39E8B /* SideMenuCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BAB23620719BB900E39E8B /* SideMenuCell.swift */; };
 		34D521A62071BCA800528852 /* FirebaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D521A52071BCA800528852 /* FirebaseManager.swift */; };
+		34D521A82072D69800528852 /* ManageRestaurantViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D521A72072D69800528852 /* ManageRestaurantViewController.swift */; };
+		34D521AA2072DFBD00528852 /* AddRestaurantViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D521A92072DFBD00528852 /* AddRestaurantViewController.swift */; };
 		81398AF1A92EE236634E639B /* Pods_NutriCal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5B75EB182DD7517A9B8E1F28 /* Pods_NutriCal.framework */; };
 		DE2449E36B0CDE41C1E50687 /* Pods_NutriCalUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E4BDCBAEF5BE9C9D988BB546 /* Pods_NutriCalUITests.framework */; };
 /* End PBXBuildFile section */
@@ -96,6 +98,8 @@
 		34BAB23420719B9100E39E8B /* FilterCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterCell.swift; sourceTree = "<group>"; };
 		34BAB23620719BB900E39E8B /* SideMenuCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenuCell.swift; sourceTree = "<group>"; };
 		34D521A52071BCA800528852 /* FirebaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseManager.swift; sourceTree = "<group>"; };
+		34D521A72072D69800528852 /* ManageRestaurantViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageRestaurantViewController.swift; sourceTree = "<group>"; };
+		34D521A92072DFBD00528852 /* AddRestaurantViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddRestaurantViewController.swift; sourceTree = "<group>"; };
 		446BFB6E2FCBAFC63C4BA9F3 /* Pods-NutriCalUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NutriCalUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-NutriCalUITests/Pods-NutriCalUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		5B75EB182DD7517A9B8E1F28 /* Pods_NutriCal.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_NutriCal.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		768EC3AB4127F2D2CBF6E816 /* Pods-NutriCalTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NutriCalTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-NutriCalTests/Pods-NutriCalTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -169,7 +173,6 @@
 				34B8E489206E57DC0010ADDE /* RestaurantDetails */,
 				34B8E488206E57CD0010ADDE /* FoodDetails */,
 				34B8E476206E21710010ADDE /* Home */,
-				34D521A42071BC9500528852 /* Network */,
 				34B8E484206E56020010ADDE /* Core */,
 				34ADA73C206D7BA700C31D37 /* Info.plist */,
 				34B8E473206E215C0010ADDE /* GoogleService-Info.plist */,
@@ -237,6 +240,7 @@
 		34B8E477206E23DA0010ADDE /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				34D521A42071BC9500528852 /* Network */,
 				34B8E478206E23EA0010ADDE /* TableViewModel.swift */,
 				34B8E486206E56260010ADDE /* Restaurant.swift */,
 				34BAB22C207189BA00E39E8B /* User.swift */,
@@ -315,6 +319,8 @@
 		34BAB22B2071853A00E39E8B /* RestaurantMode */ = {
 			isa = PBXGroup;
 			children = (
+				34D521A72072D69800528852 /* ManageRestaurantViewController.swift */,
+				34D521A92072DFBD00528852 /* AddRestaurantViewController.swift */,
 				34B8E485206E56180010ADDE /* RestaurantLogin */,
 			);
 			name = RestaurantMode;
@@ -688,6 +694,8 @@
 				34BAB21B206E629600E39E8B /* SideMenuViewController.swift in Sources */,
 				34B8E48B206E58510010ADDE /* FoodDetailViewController.swift in Sources */,
 				34ADA733206D7BA700C31D37 /* TabBarController.swift in Sources */,
+				34D521AA2072DFBD00528852 /* AddRestaurantViewController.swift in Sources */,
+				34D521A82072D69800528852 /* ManageRestaurantViewController.swift in Sources */,
 				34B8E483206E50890010ADDE /* RestaurantView.swift in Sources */,
 				34BAB21F206E659600E39E8B /* LoginBaseViewController.swift in Sources */,
 				34ADA761206D7E8800C31D37 /* UIColors.swift in Sources */,

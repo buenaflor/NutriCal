@@ -28,9 +28,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         FirebaseApp.configure()
         
-        var manager = FirebaseManager()
-        manager.test()
+        let db = Firestore.firestore()
+        let batch = db.batch()
         
+        let restaurants = db.collection("restaurantOwner").document((Auth.auth().currentUser?.uid)!)
+                            .collection("restaurants").document()
+        
+        let restaurant = Restaurant(name: "MeinR", street: "Langobardenstraße 176", postalCode: 1220, city: "Wien")
+        
+        batch.setData(restaurant.dictionary, forDocument: restaurants)
+        
+        batch.commit() { err in
+            if let err = err {
+                print("Error writing batch \(err)")
+            } else {
+                print("Batch write to 'roles' succeeded.")
+            }
+        }
+        
+//        var manager = FirebaseManager()
+//        manager.fetchRestaurant()
+//
 //        let db = Firestore.firestore()
 //
 //        let food1 = Food(isVegan: true, ingredients: ["tomatoes", "lettuce", "mushrooms"], kCal: 324, price: 3.44)

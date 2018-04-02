@@ -15,14 +15,16 @@ protocol DocumentSerializable {
 
 struct Restaurant {
     let name: String
-    let address: String
+    let street: String
+    let postalCode: Int
     let city: String
     
     var dictionary: [String: Any]  {
         return [
             "name": name,
             "city": city,
-            "address": address,
+            "street": street,
+            "postalCode": postalCode
         ]
     }
 }
@@ -61,11 +63,12 @@ extension Restaurant: DocumentSerializable {
     init?(dictionary: [String : Any]) {
         guard
             let name = dictionary["name"] as? String,
-            let address = dictionary["city"] as? String,
-            let city = dictionary["address"] as? String
+            let street = dictionary["street"] as? String,
+            let postalCode = dictionary["postalCode"] as? Int,
+            let city = dictionary["city"] as? String
             else { return nil }
         
-        self.init(name: name, address: address, city: city)
+        self.init(name: name, street: street, postalCode: postalCode, city: city)
     }
 }
 

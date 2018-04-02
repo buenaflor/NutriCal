@@ -13,7 +13,7 @@ import Firebase
 class FirebaseManager {
     let db = Firestore.firestore()
     
-    func test() {
+    func fetchRole(completion: @escaping (_ isRestaurantOwner: Bool) -> Void) {
         let ref = db.collection("roles")
         .whereField("role", isEqualTo: "restaurant")
         
@@ -22,8 +22,23 @@ class FirebaseManager {
                 print("Error getting documents: \(err)")
             } else {
                 for document in querySnapshot!.documents {
+                    if Auth.auth().currentUser?.uid == document.documentID {
+                        completion(true)
+                        return
+                    }
                     print("\(document.documentID) => \(document.data())")
                 }
+            }
+        }
+    }
+    
+    func fetchRestaurant() {
+        fetchRole { (isRestaurantOwner) in
+            if !isRestaurantOwner {
+                print("Error - Access Denied: cannot fetch restaurants")
+            }
+            else {
+                
             }
         }
     }

@@ -15,6 +15,8 @@ enum SideMenuOptions: String {
     case loginAsRestaurant
     case loginAsUser
     case filter
+    case manageRestaurant
+    case none
 }
 
 enum FilterOption {
@@ -31,7 +33,13 @@ struct SideMenuHeader {
     let name: String
 }
 
+protocol SideMenuHeaderViewDelegate: class {
+    func sideMenuHeaderView(_ sideMenuHeaderView: UIView, didClick button: UIButton)
+}
+
 class SideMenuHeaderView: UIView {
+    
+    weak var delegate: SideMenuHeaderViewDelegate?
     
     private lazy var nameLabel: UILabel = {
         let label = UILabel()
@@ -46,6 +54,14 @@ class SideMenuHeaderView: UIView {
         return label
     }()
     
+    internal lazy var backButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Back", for: .normal)
+        button.backgroundColor = .lightGray
+        button.addTarget(self, action: #selector(backButtonTapped(sender:)), for: .touchUpInside)
+        return button
+    }()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -58,6 +74,17 @@ class SideMenuHeaderView: UIView {
             v.topAnchor.constraint(equalTo: p.safeAreaLayoutGuide.topAnchor, constant: 20),
             v.leadingAnchor.constraint(equalTo: p.leadingAnchor, constant: 20)
             ]}
+        
+        self.add(subview: backButton) { (v, p) in [
+            v.bottomAnchor.constraint(equalTo: p.bottomAnchor, constant: -10),
+            v.widthAnchor.constraint(equalToConstant: 100),
+            v.leadingAnchor.constraint(equalTo: p.leadingAnchor, constant: 10),
+            v.heightAnchor.constraint(equalToConstant: 40)
+            ]}
+    }
+    
+    @objc private func backButtonTapped(sender: UIButton) {
+        self.delegate?.sideMenuHeaderView(self, didClick: sender)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -86,11 +113,13 @@ class SideMenuViewController: UIViewController {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.alwaysBounceVertical = false
+        sideMenuHeaderView.delegate = self
+        sideMenuHeaderView.backButton.isHidden = true
         tableView.tableHeaderView = sideMenuHeaderView
         return tableView
     }()
     
-    private var sideMenuOptions = [SideMenuOptions.loginAsUser, SideMenuOptions.loginAsRestaurant, SideMenuOptions.filter]
+    private var sideMenuOptions = [SideMenuOptions.loginAsUser, SideMenuOptions.loginAsRestaurant, SideMenuOptions.filter, SideMenuOptions.manageRestaurant]
     private var filterOptions = [FilterOption.carbs, FilterOption.fats, FilterOption.kCal, FilterOption.location, FilterOption.price, FilterOption.protein, FilterOption.rating]
     private var currentOption: SideMenuOptions?
     
@@ -184,7 +213,14 @@ extension SideMenuViewController: UITableViewDelegate {
                 self.present(navController, animated: true, completion: nil)
             case SideMenuOptions.filter:
                 self.currentOption = .filter
+                sideMenuHeaderView.backButton.isHidden = false
                 tableView.reloadData()
+            case SideMenuOptions.manageRestaurant:
+                let manageRestaurantsViewController = ManageRestaurantsViewController()
+                let navController = UINavigationController(rootViewController: manageRestaurantsViewController)
+                self.present(navController, animated: true, completion: nil)
+            default:
+                break;
             }
         }
         
@@ -196,4 +232,14 @@ extension SideMenuViewController: FilterCellDelegate {
     func filterCell(_ filterCell: FilterCell, didChange slider: UISlider, filterOption: FilterOption) {
         self.delegate?.sideMenuViewController(self, didChange: slider, filterOption: filterOption)
     }
+}
+
+extension SideMenuViewController: SideMenuHeaderViewDelegate {
+    func sideMenuHeaderView(_ sideMenuHeaderView: UIView, didClick button: UIButton) {
+        self.currentOption = .none
+        self.sideMenuHeaderView.backButton.isHidden = true
+        self.tableView.reloadData()
+    }
+    
+    
 }
