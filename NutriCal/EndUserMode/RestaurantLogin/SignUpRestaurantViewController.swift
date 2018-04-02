@@ -24,7 +24,7 @@ class SignUpRestaurantViewController: LoginBaseViewController, LoginControllerTy
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.title = "Register"
+        self.title = "Register as Restaurant Owner"
         
         self.navigationController?.navigationBar.backItem?.title = "Custom Title"
         
@@ -67,7 +67,7 @@ extension SignUpRestaurantViewController: LoginBaseViewControllerDelegate {
                 Auth.auth().createUser(withEmail: usernameText, password: passwordText, completion: { (user, error) in
                     if error == nil {
                         guard let email = user?.email, let uid = user?.uid else { return }
-                        self.addRoleToDatabase(email: email, userId: uid, role: Role.endUser.rawValue)
+                        self.addRoleToDatabase(email: email, userId: uid, role: Role.restaurant.rawValue)
                         
                         let alertController = UIAlertController(title: "Success", message: "Successfully Signed Up!", preferredStyle: .alert)
   
@@ -94,7 +94,4 @@ extension SignUpRestaurantViewController: LoginBaseViewControllerDelegate {
             print("Error, Wrong Type")
         }
     }
-    
-    
-    
 }

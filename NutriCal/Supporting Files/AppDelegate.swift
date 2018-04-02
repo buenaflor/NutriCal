@@ -28,6 +28,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         FirebaseApp.configure()
         
+        var manager = FirebaseManager()
+        manager.test()
+        
 //        let db = Firestore.firestore()
 //
 //        let food1 = Food(isVegan: true, ingredients: ["tomatoes", "lettuce", "mushrooms"], kCal: 324, price: 3.44)

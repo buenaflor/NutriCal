@@ -88,23 +88,11 @@ class LoginBaseViewController: UIViewController {
         return view
     }()
     
-    internal lazy var registerTextView: UITextView = {
+    internal var registerTextView: UITextView = {
         let textView = UITextView()
         textView.isEditable = false
         textView.isScrollEnabled = false
         textView.sizeToFit()
-        
-        let registerString = "Register"
-        let labelString = "Don't have an account yet? Register"
-        
-        let wholeRange = (labelString as NSString).range(of: labelString)
-        let range = (labelString as NSString).range(of: registerString)
-        
-        let attributedText = NSMutableAttributedString.init(string: labelString)
-        attributedText.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.StandardMode.TabBarColor , range: range)
-        attributedText.addAttribute(NSAttributedStringKey.font, value: UIFont.boldSystemFont(ofSize: 18), range: wholeRange)
-        textView.attributedText = attributedText
-
         return textView
     }()
 
@@ -215,7 +203,8 @@ class LoginBaseViewController: UIViewController {
                 let signUpRestaurantViewController = SignUpRestaurantViewController()
                 self.navigationController?.pushViewController(signUpRestaurantViewController, animated: true)
             case Role.endUser:
-                print("")
+                let signEndUserViewController = SignUpEndUserViewController()
+                self.navigationController?.pushViewController(signEndUserViewController, animated: true)
             }
         }
     }

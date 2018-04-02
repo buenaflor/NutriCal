@@ -9,6 +9,7 @@
 import UIKit
 
 import SideMenu
+import Firebase
 
 enum SideMenuOptions: String {
     case loginAsRestaurant
@@ -16,67 +17,63 @@ enum SideMenuOptions: String {
     case filter
 }
 
+enum FilterOption {
+    case price
+    case kCal
+    case protein
+    case carbs
+    case fats
+    case location
+    case rating
+}
+
+struct SideMenuHeader {
+    let name: String
+}
+
 class SideMenuHeaderView: UIView {
+    
+    private lazy var nameLabel: UILabel = {
+        let label = UILabel()
+        label.numberOfLines = 1
+        label.font = UIFont.boldSystemFont(ofSize: 20)
+        if let name = Auth.auth().currentUser  {
+            label.text = "Welcome, \(Auth.auth().currentUser?.email ?? "Name not available")"
+        }
+        else {
+            label.text = "Login to access more features"
+        }
+        return label
+    }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        self.backgroundColor = .white
+        self.backgroundColor = UIColor.StandardMode.SideMenuHeaderView
+        self.configureConstraints()
     }
     
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-}
-
-class FilterCell: UITableViewCell {
-    
-    var viewController: UIViewController? {
-        didSet {
-            print("helloe")
-            guard let vc = viewController as? SideMenuViewController else { return }
-//            button.addTarget(viewController, action: #selector(vc.testing), for: .touchUpInside)
-            volumeSlider.addTarget(viewController, action: #selector(vc.testing), for: .allEvents)
-        }
-    }
-    
-    private let volumeSlider: UISlider = {
-        let slider = UISlider()
-        return slider
-    }()
-    
-    private let button: UIButton = {
-        let button = UIButton()
-        button.setTitle("Hey", for: .normal)
-        button.backgroundColor = .blue
-        return button
-    }()
-    
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
-        self.add(subview: volumeSlider) { (v, p) in [
-            v.centerYAnchor.constraint(equalTo: p.centerYAnchor),
-            v.widthAnchor.constraint(equalTo: p.widthAnchor, multiplier: 0.8),
-            v.centerXAnchor.constraint(equalTo: p.centerXAnchor),
-            v.heightAnchor.constraint(equalToConstant: 30)
+    private func configureConstraints() {
+        self.add(subview: self.nameLabel) { (v, p) in [
+            v.topAnchor.constraint(equalTo: p.safeAreaLayoutGuide.topAnchor, constant: 20),
+            v.leadingAnchor.constraint(equalTo: p.leadingAnchor, constant: 20)
             ]}
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    @objc private func buttonTapped() {
-        print("hey!")
-    }
-    
-    @objc private func volumeSliderChanged(sender: UISlider) {
-        print("changed bro")
-    }
+}
+
+protocol SideMenuViewControllerDelegate: class {
+    func sideMenuViewController(_ sideMenuViewController: SideMenuViewController, didChange slider: UISlider, filterOption: FilterOption)
 }
 
 class SideMenuViewController: UIViewController {
+    
+    weak var delegate: SideMenuViewControllerDelegate?
+    
+    var filterOption: FilterOption?
     
     private lazy var sideMenuHeaderView: SideMenuHeaderView = {
         let view = SideMenuHeaderView(frame: CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: self.view.frame.size.height * 0.25))
@@ -88,31 +85,25 @@ class SideMenuViewController: UIViewController {
         let tableView = UITableView()
         tableView.dataSource = self
         tableView.delegate = self
+        tableView.alwaysBounceVertical = false
         tableView.tableHeaderView = sideMenuHeaderView
-        
         return tableView
     }()
     
-    private var dataSource = [SideMenuOptions.loginAsUser, SideMenuOptions.loginAsRestaurant, SideMenuOptions.filter]
-    private var filters = [1, 2, 3, 4, 5]
+    private var sideMenuOptions = [SideMenuOptions.loginAsUser, SideMenuOptions.loginAsRestaurant, SideMenuOptions.filter]
+    private var filterOptions = [FilterOption.carbs, FilterOption.fats, FilterOption.kCal, FilterOption.location, FilterOption.price, FilterOption.protein, FilterOption.rating]
     private var currentOption: SideMenuOptions?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let button = UIButton()
-        button.setTitle(("Login as Restaurant"), for: .normal)
-        button.addTarget(self, action: #selector(submitButtonTapped), for: .touchUpInside)
-        button.backgroundColor = .blue
-        
-//        self.view.add(subview: button) { (v, p) in [
-//            v.centerXAnchor.constraint(equalTo: p.centerXAnchor),
-//            v.centerYAnchor.constraint(equalTo: p.centerYAnchor),
-//            v.widthAnchor.constraint(equalToConstant: 100),
-//            v.heightAnchor.constraint(equalToConstant: 100)
-//            ]}
-        
         self.setupView()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        self.tableView.reloadData()
     }
     
     private func setupView() {
@@ -124,7 +115,7 @@ class SideMenuViewController: UIViewController {
             self.tableView.register(FilterCell.self)
         }
         else {
-            self.tableView.register(UITableViewCell.self)
+            self.tableView.register(SideMenuCell.self)
         }
     }
     
@@ -142,20 +133,16 @@ class SideMenuViewController: UIViewController {
         let navController = UINavigationController(rootViewController: loginRestaurantViewController)
         self.present(navController, animated: true, completion: nil)
     }
-    
-    @objc func testing() {
-        print("hey tes")
-    }
 }
 
 extension SideMenuViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if currentOption == .filter {
-            return self.filters.count
+            return self.filterOptions.count
         }
         else {
-            return self.dataSource.count
+            return self.sideMenuOptions.count
         }
     }
     
@@ -163,18 +150,16 @@ extension SideMenuViewController: UITableViewDataSource {
         
         if currentOption == .filter {
             let cell = tableView.dequeueReusableCell(FilterCell.self, forIndexPath: indexPath)
-            
-            cell.viewController = self
-   
-            cell.backgroundColor = .red
+
+            cell.filterOption = filterOptions[indexPath.row]
+            cell.delegate = self
             
             return cell
         }
         else {
             let cell = tableView.dequeueReusableCell(UITableViewCell.self, forIndexPath: indexPath)
             
-            cell.textLabel?.text = dataSource[indexPath.row].rawValue
-            cell.backgroundColor = .red
+            cell.textLabel?.text = sideMenuOptions[indexPath.row].rawValue
             
             return cell
         }
@@ -187,21 +172,28 @@ extension SideMenuViewController: UITableViewDataSource {
 
 extension SideMenuViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
- 
-        switch dataSource[indexPath.row] {
-        case SideMenuOptions.loginAsRestaurant:
-            let loginRestaurantViewController = LoginRestaurantViewController()
-            let navController = UINavigationController(rootViewController: loginRestaurantViewController)
-            self.present(navController, animated: true, completion: nil)
-        case SideMenuOptions.loginAsUser:
-            let loginEndUserViewController = LoginEndUserViewController()
-            let navController = UINavigationController(rootViewController: loginEndUserViewController)
-            self.present(navController, animated: true, completion: nil)
-        case SideMenuOptions.filter:
-            self.currentOption = .filter
-            tableView.reloadData()
+        if currentOption != .filter {
+            switch sideMenuOptions[indexPath.row] {
+            case SideMenuOptions.loginAsRestaurant:
+                let loginRestaurantViewController = LoginRestaurantViewController()
+                let navController = UINavigationController(rootViewController: loginRestaurantViewController)
+                self.present(navController, animated: true, completion: nil)
+            case SideMenuOptions.loginAsUser:
+                let loginEndUserViewController = LoginEndUserViewController()
+                let navController = UINavigationController(rootViewController: loginEndUserViewController)
+                self.present(navController, animated: true, completion: nil)
+            case SideMenuOptions.filter:
+                self.currentOption = .filter
+                tableView.reloadData()
+            }
         }
         
         tableView.deselectRow(at: indexPath, animated: true)
+    }
+}
+
+extension SideMenuViewController: FilterCellDelegate {
+    func filterCell(_ filterCell: FilterCell, didChange slider: UISlider, filterOption: FilterOption) {
+        self.delegate?.sideMenuViewController(self, didChange: slider, filterOption: filterOption)
     }
 }

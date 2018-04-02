@@ -25,17 +25,28 @@ class HomeViewController: UIViewController {
     
     private let dealOfTheMonthView = DealOfTheMonthView()
     
+    private var dataSource = ["", "", "", ""]
+    
     override func viewDidLoad() {
         super.viewDidLoad()
     
         self.setupView()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        print("appeared")
+    }
+    
     private func createSideMenu() {
         let leftSideMenuViewController = SideMenuViewController()
-        let menuLeftNavigationController = UISideMenuNavigationController(rootViewController: leftSideMenuViewController)
-        SideMenuManager.default.menuLeftNavigationController = menuLeftNavigationController
+        leftSideMenuViewController.delegate = self
         
+        let menuLeftNavigationController = UISideMenuNavigationController(rootViewController: leftSideMenuViewController)
+        
+        SideMenuManager.default.menuLeftNavigationController = menuLeftNavigationController
+
         SideMenuManager.default.menuAddPanGestureToPresent(toView: self.navigationController!.navigationBar)
         SideMenuManager.default.menuAddScreenEdgePanGesturesToPresent(toView: self.navigationController!.view)
         SideMenuManager.default.menuWidth = max(round(min((UIScreen.main.bounds.width), (UIScreen.main.bounds.height)) * 0.80), 240)
@@ -79,7 +90,7 @@ extension HomeViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 5
+        return dataSource.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -111,8 +122,14 @@ extension HomeViewController: RestaurantMenuCellDelegate {
     func pushViewController(_ viewController: UIViewController) {
         self.navigationController?.pushViewController(viewController, animated: true)
     }
-    
-    
+}
+
+extension HomeViewController: SideMenuViewControllerDelegate {
+    func sideMenuViewController(_ sideMenuViewController: SideMenuViewController, didChange slider: UISlider, filterOption: FilterOption) {
+        print(Int(slider.value * 10))
+        self.dataSource.removeAll()
+        self.collectionView.reloadData()
+    }
 }
 
 
