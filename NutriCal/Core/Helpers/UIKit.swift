@@ -138,15 +138,23 @@ extension UIView {
     }
 
     
-    public func addSeparatorLine() {
+    public func addSeparatorLine(color: UIColor) {
         let view = UIView()
-        view.backgroundColor = .lightGray
+        view.backgroundColor = color
+        
         self.add(subview: view) { (view, parent) in [
             view.heightAnchor.constraint(equalToConstant: 0.5),
-            view.leadingAnchor.constraint(equalTo: parent.leadingAnchor),
-            view.trailingAnchor.constraint(equalTo: parent.trailingAnchor),
-            view.bottomAnchor.constraint(equalTo: parent.bottomAnchor)
+            view.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+            view.trailingAnchor.constraint(equalTo: self.trailingAnchor),
+            view.topAnchor.constraint(equalTo: self.bottomAnchor)
             ]}
+        
+//        parent.add(subview: view) { (v, p) in [
+//            v.heightAnchor.constraint(equalToConstant: 0.5),
+//            v.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+//            v.trailingAnchor.constraint(equalTo: self.trailingAnchor),
+//            v.topAnchor.constraint(equalTo: self.bottomAnchor)
+//            ]}
     }
 }
 

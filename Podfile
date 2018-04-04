@@ -7,10 +7,13 @@ target 'NutriCal' do
 
   # Pods for NutriCal
   
-  pod 'Firebase/Core'
   pod 'Firebase/Auth'
   pod 'Firebase/Firestore'
+  pod 'Firebase/Core'
+  pod 'Firebase/Storage'
+  pod 'SwiftSpinner'
   pod 'SideMenu'
+  pod 'SDWebImage'
 
   target 'NutriCalTests' do
     inherit! :search_paths

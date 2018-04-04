@@ -104,7 +104,6 @@ class SideMenuViewController: UIViewController {
     
     private lazy var sideMenuHeaderView: SideMenuHeaderView = {
         let view = SideMenuHeaderView(frame: CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: self.view.frame.size.height * 0.25))
-        view.addSeparatorLine()
         return view
     }()
     

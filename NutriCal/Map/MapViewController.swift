@@ -10,6 +10,8 @@ import UIKit
 import MapKit
 import CoreLocation
 
+import SwiftSpinner
+
 final class Annotation: NSObject, MKAnnotation {
     var coordinate: CLLocationCoordinate2D
     var title: String?
@@ -56,24 +58,45 @@ class MapViewController: UIViewController {
         self.determineMyCurrentLocation()
 //        self.fetchAnnotationData()
         
-        let address = "Burggasse 12, 1070 Wien"
+        self.addAnnotations()
+    }
+    
+    private func addAnnotations() {
         
-        let geoCoder = CLGeocoder()
-        geoCoder.geocodeAddressString(address) { (placemarks, error) in
-            guard
-                let placemarks = placemarks,
-                let location = placemarks.first?.location
-                else {
-                    print("not location found")
-                    return
-            }
-            
-            print("latitude: \(location.coordinate.latitude), longitude: \(location.coordinate.longitude)")
-            let coordinate = CLLocationCoordinate2D(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
-            let annotation = Annotation(coordinate: coordinate, title: "Die Burgermacher", subtitle: "Burger & Drinks")
-            self.mapView.addAnnotation(annotation)
-            self.mapView.setRegion(annotation.region, animated: true)
+        let firebaseManager = FirebaseManager()
+        
+        SwiftSpinner.show("Fetching Map Data")
+        
+        firebaseManager.fetchRestaurant { (restaurantIdentifiers) in
+            restaurantIdentifiers.forEach({ (restaurantIdentifier) in
+                
+                let name = restaurantIdentifier.restaurant.name
+                let street = restaurantIdentifier.restaurant.street
+                let postalCode = restaurantIdentifier.restaurant.postalCode
+                let city = restaurantIdentifier.restaurant.city
+                let address = "\(street), \(postalCode) \(city)"
+
+                let geoCoder = CLGeocoder()
+                geoCoder.geocodeAddressString(address) { (placemarks, error) in
+                    guard
+                        let placemarks = placemarks,
+                        let location = placemarks.first?.location
+                        else {
+                            print("not location found")
+                            return
+                    }
+
+                    print("latitude: \(location.coordinate.latitude), longitude: \(location.coordinate.longitude)")
+                    let coordinate = CLLocationCoordinate2D(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
+                    let annotation = Annotation(coordinate: coordinate, title: name, subtitle: "Burger & Drinks")
+
+                    self.mapView.addAnnotation(annotation)
+                }
+                
+            })
+            SwiftSpinner.hide()
         }
+        
     }
     
     private func setupView() {
@@ -83,10 +106,10 @@ class MapViewController: UIViewController {
     }
     
     private func fetchAnnotationData() {
-        let coordinate = CLLocationCoordinate2D(latitude: 37.7955, longitude: -122.3937)
-        let annotation = Annotation(coordinate: coordinate, title: "Ferry Building", subtitle: "San Francisco")
-        mapView.addAnnotation(annotation)
-        mapView.setRegion(annotation.region, animated: true)
+//        let coordinate = CLLocationCoordinate2D(latitude: 37.7955, longitude: -122.3937)
+//        let annotation = Annotation(coordinate: coordinate, title: "Ferry Building", subtitle: "San Francisco")
+//        mapView.addAnnotation(annotation)
+//        mapView.setRegion(annotation.region, animated: true)
     }
     
     private func determineMyCurrentLocation() {

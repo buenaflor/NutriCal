@@ -13,18 +13,27 @@ protocol DocumentSerializable {
     init?(dictionary: [String: Any])
 }
 
+struct RestaurantIdentifier {
+    let restaurant: Restaurant
+    let documentIdentifier: String
+}
+
 struct Restaurant {
     let name: String
     let street: String
-    let postalCode: Int
+    let postalCode: String
     let city: String
-    
+    let confirmation: String
+    let imageFilePath: String
+
     var dictionary: [String: Any]  {
         return [
             "name": name,
             "city": city,
             "street": street,
-            "postalCode": postalCode
+            "postalCode": postalCode,
+            "confirmation": confirmation,
+            "imageFilePath": imageFilePath
         ]
     }
 }
@@ -64,11 +73,13 @@ extension Restaurant: DocumentSerializable {
         guard
             let name = dictionary["name"] as? String,
             let street = dictionary["street"] as? String,
-            let postalCode = dictionary["postalCode"] as? Int,
-            let city = dictionary["city"] as? String
+            let postalCode = dictionary["postalCode"] as? String,
+            let city = dictionary["city"] as? String,
+            let confirmation = dictionary["confirmation"] as? String,
+            let imageFilePath = dictionary["imageFilePath"] as? String
             else { return nil }
         
-        self.init(name: name, street: street, postalCode: postalCode, city: city)
+        self.init(name: name, street: street, postalCode: postalCode, city: city, confirmation: confirmation, imageFilePath: imageFilePath)
     }
 }
 

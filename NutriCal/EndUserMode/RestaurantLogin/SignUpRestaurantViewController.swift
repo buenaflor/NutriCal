@@ -38,13 +38,7 @@ class SignUpRestaurantViewController: LoginBaseViewController, LoginControllerTy
         let roles = db.collection("roles").document(userId)
         let user = User(email: email, role: role)
         
-        let restaurants = db.collection("restaurantOwner").document(userId)
-                                .collection("restaurants").document()
-        
-        let restaurant = Restaurant(name: "MeinR", street: "Langobardenstraße 176", postalCode: 1220, city: "Wien")
-        
         batch.setData(user.dictionary, forDocument: roles)
-        batch.setData(restaurant.dictionary, forDocument: restaurants)
         
         batch.commit() { err in
             if let err = err {
