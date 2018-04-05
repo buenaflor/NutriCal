@@ -182,14 +182,13 @@ class AddRestaurantsViewController: UIViewController {
             let street = streetTextField.text,
             let postalCode = postalCodeTextField.text,
             let city = cityTextField.text,
-            let imgFilePathString = imageFilePath,
-            let imgFilePath = URL(string: imgFilePathString)
+            let imgFilePathString = imageFilePath
             else { return }
         
         SwiftSpinner.show("Adding Restaurant: \(name)")
         
         let manager = FirebaseManager()
-        manager.addRestaurantToCurrentUser(with: name, street: street, postalCode: postalCode, city: city, image: (self.channelImagePickerButton.imageView?.image)!, filePath: imgFilePath, completion: {
+        manager.addRestaurantToCurrentUser(with: name, street: street, postalCode: postalCode, city: city, filePath: imgFilePathString, completion: {
             
             SwiftSpinner.hide()
             
@@ -259,6 +258,7 @@ extension AddRestaurantsViewController: UIImagePickerControllerDelegate, UINavig
             data.write(toFile: localPath!, atomically: true)
             
             imageFilePath = localPath
+            let firebaseManager = FirebaseManager()
         }
         
         dismiss(animated: true, completion: nil)

@@ -8,6 +8,7 @@
 
 import UIKit
 
+
 class BaseImagePickerViewController: UIViewController {
     
     let imagePickerButton: UIButton = {
@@ -25,7 +26,9 @@ class BaseImagePickerViewController: UIViewController {
 }
 
 extension BaseImagePickerViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        
         guard let pickedImage = info[UIImagePickerControllerOriginalImage] as? UIImage else { return }
         imagePickerButton.setImage(pickedImage, for: .normal)
         

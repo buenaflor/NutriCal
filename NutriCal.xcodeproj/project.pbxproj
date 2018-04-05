@@ -39,6 +39,9 @@
 		34C5C84D2074E8A700498B6E /* BaseImagePickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C5C84C2074E8A700498B6E /* BaseImagePickerViewController.swift */; };
 		34C5C84F2074F42C00498B6E /* AddRestaurantMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C5C84E2074F42C00498B6E /* AddRestaurantMenuViewController.swift */; };
 		34C5C8522074F53900498B6E /* RestaurantDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C5C8512074F53900498B6E /* RestaurantDetailViewController.swift */; };
+		34C5C85520754A9200498B6E /* AddMenuFoodViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C5C85420754A9200498B6E /* AddMenuFoodViewController.swift */; };
+		34C5C8582076022100498B6E /* AddIngredientsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C5C8572076022100498B6E /* AddIngredientsViewController.swift */; };
+		34C5C85A2076147C00498B6E /* InternalRestaurant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C5C8592076147C00498B6E /* InternalRestaurant.swift */; };
 		34D521A62071BCA800528852 /* FirebaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D521A52071BCA800528852 /* FirebaseManager.swift */; };
 		34D521A82072D69800528852 /* ManageRestaurantViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D521A72072D69800528852 /* ManageRestaurantViewController.swift */; };
 		34D521AA2072DFBD00528852 /* AddRestaurantViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D521A92072DFBD00528852 /* AddRestaurantViewController.swift */; };
@@ -105,6 +108,9 @@
 		34C5C84C2074E8A700498B6E /* BaseImagePickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseImagePickerViewController.swift; sourceTree = "<group>"; };
 		34C5C84E2074F42C00498B6E /* AddRestaurantMenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddRestaurantMenuViewController.swift; sourceTree = "<group>"; };
 		34C5C8512074F53900498B6E /* RestaurantDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestaurantDetailViewController.swift; sourceTree = "<group>"; };
+		34C5C85420754A9200498B6E /* AddMenuFoodViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddMenuFoodViewController.swift; sourceTree = "<group>"; };
+		34C5C8572076022100498B6E /* AddIngredientsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddIngredientsViewController.swift; sourceTree = "<group>"; };
+		34C5C8592076147C00498B6E /* InternalRestaurant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InternalRestaurant.swift; sourceTree = "<group>"; };
 		34D521A52071BCA800528852 /* FirebaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseManager.swift; sourceTree = "<group>"; };
 		34D521A72072D69800528852 /* ManageRestaurantViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageRestaurantViewController.swift; sourceTree = "<group>"; };
 		34D521A92072DFBD00528852 /* AddRestaurantViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddRestaurantViewController.swift; sourceTree = "<group>"; };
@@ -176,6 +182,7 @@
 				34BAB23020718D0800E39E8B /* Base */,
 				34B8E477206E23DA0010ADDE /* Model */,
 				34BAB223206FF7DC00E39E8B /* Map */,
+				34C5C85620754BCC00498B6E /* Onboarding */,
 				34BAB222206EE65E00E39E8B /* EndUserLogin */,
 				34BAB22B2071853A00E39E8B /* RestaurantMode */,
 				34BAB219206E627E00E39E8B /* Sidemenu */,
@@ -253,6 +260,7 @@
 				34D521A42071BC9500528852 /* Network */,
 				34B8E478206E23EA0010ADDE /* TableViewModel.swift */,
 				34B8E486206E56260010ADDE /* Restaurant.swift */,
+				34C5C8592076147C00498B6E /* InternalRestaurant.swift */,
 				34BAB22C207189BA00E39E8B /* User.swift */,
 			);
 			path = Model;
@@ -329,12 +337,11 @@
 		34BAB22B2071853A00E39E8B /* RestaurantMode */ = {
 			isa = PBXGroup;
 			children = (
+				34C5C85320754A7D00498B6E /* Add Components */,
 				34C5C8512074F53900498B6E /* RestaurantDetailViewController.swift */,
 				34D521AD207423B800528852 /* ManageRestaurantCell.swift */,
-				34C5C84E2074F42C00498B6E /* AddRestaurantMenuViewController.swift */,
 				34D521AB207375BC00528852 /* EditRestaurantItemsViewController.swift */,
 				34D521A72072D69800528852 /* ManageRestaurantViewController.swift */,
-				34D521A92072DFBD00528852 /* AddRestaurantViewController.swift */,
 				34B8E485206E56180010ADDE /* RestaurantLogin */,
 			);
 			name = RestaurantMode;
@@ -356,6 +363,24 @@
 				34BAB23420719B9100E39E8B /* FilterCell.swift */,
 			);
 			path = Filter;
+			sourceTree = "<group>";
+		};
+		34C5C85320754A7D00498B6E /* Add Components */ = {
+			isa = PBXGroup;
+			children = (
+				34C5C84E2074F42C00498B6E /* AddRestaurantMenuViewController.swift */,
+				34D521A92072DFBD00528852 /* AddRestaurantViewController.swift */,
+				34C5C85420754A9200498B6E /* AddMenuFoodViewController.swift */,
+				34C5C8572076022100498B6E /* AddIngredientsViewController.swift */,
+			);
+			path = "Add Components";
+			sourceTree = "<group>";
+		};
+		34C5C85620754BCC00498B6E /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Onboarding;
 			sourceTree = "<group>";
 		};
 		34D521A42071BC9500528852 /* Network */ = {
@@ -634,10 +659,12 @@
 			);
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-NutriCal/Pods-NutriCal-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/AMPopTip/AMPopTip.framework",
 				"${BUILT_PRODUCTS_DIR}/BoringSSL/openssl.framework",
 				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
 				"${BUILT_PRODUCTS_DIR}/GoogleToolboxForMac/GoogleToolboxForMac.framework",
 				"${BUILT_PRODUCTS_DIR}/Protobuf/Protobuf.framework",
+				"${BUILT_PRODUCTS_DIR}/RangeSeekSlider/RangeSeekSlider.framework",
 				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
 				"${BUILT_PRODUCTS_DIR}/SideMenu/SideMenu.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftSpinner/SwiftSpinner.framework",
@@ -650,10 +677,12 @@
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AMPopTip.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/openssl.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleToolboxForMac.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Protobuf.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RangeSeekSlider.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SideMenu.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftSpinner.framework",
@@ -724,6 +753,8 @@
 				34BAB21D206E62CE00E39E8B /* LoginRestaurantViewController.swift in Sources */,
 				34D521A62071BCA800528852 /* FirebaseManager.swift in Sources */,
 				34B8E479206E23EA0010ADDE /* TableViewModel.swift in Sources */,
+				34C5C8582076022100498B6E /* AddIngredientsViewController.swift in Sources */,
+				34C5C85A2076147C00498B6E /* InternalRestaurant.swift in Sources */,
 				34BAB23520719B9100E39E8B /* FilterCell.swift in Sources */,
 				34ADA731206D7BA700C31D37 /* AppDelegate.swift in Sources */,
 				34BAB2272070450400E39E8B /* RestaurantViewController.swift in Sources */,
@@ -737,6 +768,7 @@
 				34BAB22D207189BA00E39E8B /* User.swift in Sources */,
 				34BAB23720719BB900E39E8B /* SideMenuCell.swift in Sources */,
 				34C5C84F2074F42C00498B6E /* AddRestaurantMenuViewController.swift in Sources */,
+				34C5C85520754A9200498B6E /* AddMenuFoodViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

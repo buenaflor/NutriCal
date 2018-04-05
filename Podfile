@@ -14,6 +14,8 @@ target 'NutriCal' do
   pod 'SwiftSpinner'
   pod 'SideMenu'
   pod 'SDWebImage'
+  pod 'RangeSeekSlider'
+  pod 'AMPopTip'
 
   target 'NutriCalTests' do
     inherit! :search_paths

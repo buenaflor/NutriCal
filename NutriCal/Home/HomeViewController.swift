@@ -7,7 +7,9 @@
 //
 
 import UIKit
+
 import SideMenu
+import SwiftSpinner
 
 class HomeViewController: UIViewController {
     
@@ -20,15 +22,43 @@ class HomeViewController: UIViewController {
         collectionView.backgroundColor = .white
         collectionView.register(RestaurantMenuCell.self)
         collectionView.register(DealOfTheMonthView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: "id")
+        collectionView.backgroundColor = UIColor(red:0.95, green:0.92, blue:0.89, alpha:1.0)
         return collectionView
     }()
     
     private let dealOfTheMonthView = DealOfTheMonthView()
     
-    private var dataSource = ["", "", "", ""]
+    private var internalRestaurants = [InternalRestaurant]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        SwiftSpinner.show("Loading Restaurants")
+        let firebaseManager = FirebaseManager()
+        
+        firebaseManager.fetchRestaurant { (restaurantIdentifiers) in
+            restaurantIdentifiers.forEach({ restaurantIdentifier in
+
+                firebaseManager.fetchMenu(restaurantIdentifier: restaurantIdentifier, completion: { (internalMenus, hasMenu) in
+                    
+                    print(restaurantIdentifier.restaurant.name)
+                    if hasMenu {
+                        
+                        guard let internalMenus = internalMenus else { return }
+                        
+                        let internalRestaurant = InternalRestaurant(restaurant: restaurantIdentifier.restaurant, internalMenu: internalMenus)
+                        self.internalRestaurants.append(internalRestaurant)
+                        
+                        self.collectionView.reloadData()
+                        SwiftSpinner.hide()
+                    
+                    }
+                    else {
+                        print(restaurantIdentifier.restaurant.name, "has no food yet")
+                    }
+                })
+            })
+        }
     
         self.setupView()
     }
@@ -53,7 +83,7 @@ class HomeViewController: UIViewController {
     }
     
     private func setupView() {
-        self.view.backgroundColor = .white
+        self.view.backgroundColor = UIColor(red:0.87, green:0.84, blue:0.81, alpha:1.0)
 
         self.createNavigationItems()
         self.createSideMenu()
@@ -90,12 +120,13 @@ extension HomeViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return dataSource.count
+        return self.internalRestaurants.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(RestaurantMenuCell.self, forIndexPath: indexPath)
         
+        cell.dataSource = self.internalRestaurants[indexPath.row].restaurant
         cell.delegate = self
 
         return cell
@@ -127,7 +158,6 @@ extension HomeViewController: RestaurantMenuCellDelegate {
 extension HomeViewController: SideMenuViewControllerDelegate {
     func sideMenuViewController(_ sideMenuViewController: SideMenuViewController, didChange slider: UISlider, filterOption: FilterOption) {
         print(Int(slider.value * 10))
-        self.dataSource.removeAll()
         self.collectionView.reloadData()
     }
 }

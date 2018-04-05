@@ -14,6 +14,15 @@ protocol RestaurantMenuCellDelegate: class {
 
 class RestaurantMenuCell: UICollectionViewCell {
     
+    var dataSource: Any? {
+        didSet {
+            guard let restaurant = dataSource as? Restaurant else { return }
+            restaurantView.dataSource = restaurant
+        }
+    }
+    
+    
+    
     weak var delegate: RestaurantMenuCellDelegate?
     
     private lazy var collectionView: UICollectionView = {
@@ -43,17 +52,28 @@ class RestaurantMenuCell: UICollectionViewCell {
     private func configureConstraints() {
         
         self.add(subview: self.restaurantView) { (v, p) in [
-            v.topAnchor.constraint(equalTo: p.topAnchor, constant: 12),
+            v.topAnchor.constraint(equalTo: p.topAnchor),
             v.leadingAnchor.constraint(equalTo: p.leadingAnchor, constant: 12),
             v.trailingAnchor.constraint(equalTo: p.trailingAnchor, constant: -12),
-            v.heightAnchor.constraint(equalTo: p.heightAnchor, multiplier: 0.5)
+            v.heightAnchor.constraint(equalTo: p.heightAnchor, multiplier: 0.4)
             ]}
+        
         
         self.add(subview: collectionView) { (v, p) in [
             v.topAnchor.constraint(equalTo: self.restaurantView.bottomAnchor, constant: 12),
             v.leadingAnchor.constraint(equalTo: p.leadingAnchor, constant: 12),
             v.trailingAnchor.constraint(equalTo: p.trailingAnchor, constant: -12),
             v.bottomAnchor.constraint(equalTo: p.bottomAnchor, constant: -12)
+            ]}
+        
+        let separatorView = UIView()
+        separatorView.backgroundColor = .lightGray
+        
+        self.add(subview: separatorView) { (v, p) in [
+            v.bottomAnchor.constraint(equalTo: p.bottomAnchor),
+            v.leadingAnchor.constraint(equalTo: p.leadingAnchor),
+            v.trailingAnchor.constraint(equalTo: p.trailingAnchor),
+            v.heightAnchor.constraint(equalToConstant: 0.6)
             ]}
     }
     

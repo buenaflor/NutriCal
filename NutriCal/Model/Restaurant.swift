@@ -38,6 +38,11 @@ struct Restaurant {
     }
 }
 
+struct MenuIdentifier {
+    let menu: Menu
+    let documentIdentifier: String
+}
+
 struct Menu {
     let title: String
     let lowerPriceRange: Double
@@ -53,17 +58,21 @@ struct Menu {
 }
 
 struct Food {
+    let name: String
     let isVegan: Bool
     let ingredients: [String]
     let kCal: Int
     let price: Double
+    let imageLink: String
     
     var dictionary: [String: Any]  {
         return [
+            "name": name,
             "isVegan": isVegan,
             "ingredients": ingredients,
             "kCal": kCal,
-            "price": price
+            "price": price,
+            "imageLink": imageLink
         ]
     }
 }
@@ -98,13 +107,15 @@ extension Menu: DocumentSerializable {
 extension Food: DocumentSerializable {
     init?(dictionary: [String : Any]) {
         guard
+            let name = dictionary["name"] as? String,
             let isVegan = dictionary["isVegan"] as? Bool,
             let ingredients = dictionary["ingredients"] as? [String],
             let kCal = dictionary["kCal"] as? Int,
-            let price = dictionary["price"] as? Double
+            let price = dictionary["price"] as? Double,
+            let imageLink = dictionary["imageLink"] as? String
         else { return nil }
         
-        self.init(isVegan: isVegan, ingredients: ingredients, kCal: kCal, price: price)
+        self.init(name: name, isVegan: isVegan, ingredients: ingredients, kCal: kCal, price: price, imageLink: imageLink)
     }
     
     

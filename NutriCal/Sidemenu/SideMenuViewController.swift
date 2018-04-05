@@ -27,6 +27,7 @@ enum FilterOption {
     case fats
     case location
     case rating
+    case cuisine
 }
 
 struct SideMenuHeader {

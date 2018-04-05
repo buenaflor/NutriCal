@@ -8,16 +8,35 @@
 
 import UIKit
 
+import SwiftSpinner
+
 class RestaurantDetailViewController: BaseImagePickerViewController {
     
     var restaurantIdentifier: RestaurantIdentifier? {
         didSet {
+            
+            SwiftSpinner.show("Loading Data")
+            
             guard let restaurantIdentifier = restaurantIdentifier else { return }
             guard let imgURL = URL(string: restaurantIdentifier.restaurant.imageFilePath) else { return }
             
+            self.firebaseManager.fetchMenu(restaurantIdentifier: restaurantIdentifier, completion: { (internalMenus, hasMenu) in
+                if hasMenu {
+                    guard let internalMenus = internalMenus else { return }
+                    self.menus = internalMenus
+                    self.setupCountLabelText(for: self.menuCountLabel, count: self.menus.count, searchString: "Menus")
+                    self.tableView.reloadData()
+                    SwiftSpinner.hide()
+                }
+                else {
+                    SwiftSpinner.hide()
+                }
+            })
+            
+            
             self.imagePickerButton.sd_setImage(with: imgURL, for: .normal)
-            self.setupCountLabelText(for: reviewsCountLabel, count: "", searchString: "Reviews")
-            self.setupCountLabelText(for: menuCountLabel, count: "", searchString: "Menus")
+            self.setupCountLabelText(for: reviewsCountLabel, count: 0, searchString: "Reviews")
+            self.setupCountLabelText(for: menuCountLabel, count: self.menus.count, searchString: "Menus")
             self.ratingLabel.text = "Avg. Rating: 4.3"
             
             self.nameLabel.text = restaurantIdentifier.restaurant.name
@@ -28,6 +47,8 @@ class RestaurantDetailViewController: BaseImagePickerViewController {
             self.addressLabel.text = "\(street), \(postalCode) \(city)"
         }
     }
+    
+    let firebaseManager = FirebaseManager()
     
     private let stackView: UIStackView = {
         let stackView = UIStackView()
@@ -81,6 +102,7 @@ class RestaurantDetailViewController: BaseImagePickerViewController {
         let button = UIButton()
         button.setImage(#imageLiteral(resourceName: "add").withRenderingMode(.alwaysTemplate), for: .normal)
         button.tintColor = .gray
+        button.addTarget(self, action: #selector(addMenuButtonTapped), for: .touchUpInside)
         return button
     }()
     
@@ -100,6 +122,8 @@ class RestaurantDetailViewController: BaseImagePickerViewController {
         return tableView
     }()
     
+    private var menus = [InternalMenu]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -114,8 +138,8 @@ class RestaurantDetailViewController: BaseImagePickerViewController {
         self.configureConstraints()
     }
     
-    private func setupCountLabelText(for label: UILabel, count: String, searchString: String) {
-        let labelString = "0\n\(searchString)"
+    private func setupCountLabelText(for label: UILabel, count: Int, searchString: String) {
+        let labelString = "\(count)\n\(searchString)"
         
         let wholeRange = (labelString as NSString).range(of: labelString)
         let range = (labelString as NSString).range(of: searchString)
@@ -172,22 +196,22 @@ class RestaurantDetailViewController: BaseImagePickerViewController {
         separatorLine.backgroundColor = UIColor.StandardMode.TabBarColor
         
         self.view.add(subview: separatorLine) { (v, p) in [
-            v.topAnchor.constraint(equalTo: addressLabel.bottomAnchor, constant: 40),
+            v.topAnchor.constraint(equalTo: addressLabel.bottomAnchor, constant: 20),
             v.leadingAnchor.constraint(equalTo: p.leadingAnchor),
             v.trailingAnchor.constraint(equalTo: p.trailingAnchor),
             v.heightAnchor.constraint(equalToConstant: 0.5)
             ]}
         
         self.view.add(subview: addMenuButton) { (v, p) in [
-            v.topAnchor.constraint(equalTo: separatorLine.bottomAnchor),
+            v.topAnchor.constraint(equalTo: separatorLine.bottomAnchor, constant: 20),
             v.leadingAnchor.constraint(equalTo: p.leadingAnchor, constant: 25),
-            v.widthAnchor.constraint(equalToConstant: 55),
-            v.heightAnchor.constraint(equalToConstant: 55)
+            v.widthAnchor.constraint(equalToConstant: 45),
+            v.heightAnchor.constraint(equalToConstant: 45)
             ]}
         
         self.view.add(subview: addMenuLabel) { (v, p) in [
-            v.topAnchor.constraint(equalTo: separatorLine.bottomAnchor, constant: 20),
-            v.leadingAnchor.constraint(equalTo: addMenuButton.trailingAnchor)
+            v.topAnchor.constraint(equalTo: separatorLine.bottomAnchor, constant: 32),
+            v.leadingAnchor.constraint(equalTo: addMenuButton.trailingAnchor, constant: 15)
             ]}
         
         self.view.add(subview: tableView) { (v, p) in [
@@ -244,18 +268,37 @@ class RestaurantDetailViewController: BaseImagePickerViewController {
         self.imagePickerController.sourceType = .photoLibrary
         self.present(imagePickerController, animated: true, completion: nil)
     }
+    
+    @objc private func addMenuButtonTapped() {
+        
+        guard let restaurantIdentifier = restaurantIdentifier else { return }
+        
+        let addRestaurantMenuViewController = AddRestaurantMenuViewController()
+        addRestaurantMenuViewController.delegate = self
+        addRestaurantMenuViewController.restaurantIdentifier = restaurantIdentifier
+        
+        self.navigationController?.pushViewController(addRestaurantMenuViewController, animated: true)
+    }
+}
+
+extension RestaurantDetailViewController: AddRestaurantMenuViewControllerDelegate {
+    
+    func addRestaurantMenuViewController(_ addRestaurantMenuViewController: AddRestaurantMenuViewController, didReceive menu: InternalMenu) {
+        self.menus.append(menu)
+        self.tableView.reloadData()
+    }
 }
 
 extension RestaurantDetailViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
+        return menus.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(UITableViewCell.self, forIndexPath: indexPath)
         
-        cell.textLabel?.text = "My Menu"
+        cell.textLabel?.text = menus[indexPath.row].menu.title
         
         return cell
     }

@@ -35,6 +35,8 @@ class FilterCell: UITableViewCell {
                 print("")
             case FilterOption.fats:
                 print("")
+            case FilterOption.cuisine:
+                print("")
             }
             
             self.volumeSlider.addTarget(self, action: #selector(volumeSliderChanged(sender:)), for: [.touchUpInside, .touchUpOutside])

@@ -11,6 +11,7 @@ import MapKit
 import CoreLocation
 
 import SwiftSpinner
+import AMPopTip
 
 final class Annotation: NSObject, MKAnnotation {
     var coordinate: CLLocationCoordinate2D
@@ -173,8 +174,8 @@ extension MapViewController: CLLocationManagerDelegate {
 extension MapViewController: MKMapViewDelegate {
 
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
-        let foodDetailViewController = FoodDetailViewController()
-        navigationController?.pushViewController(foodDetailViewController, animated: true)
+//        let foodDetailViewController = FoodDetailViewController()
+//        navigationController?.pushViewController(foodDetailViewController, animated: true)
     }
     
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
