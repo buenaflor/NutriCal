@@ -25,6 +25,7 @@ struct Restaurant {
     let city: String
     let confirmation: String
     let imageFilePath: String
+    let cuisine: String
 
     var dictionary: [String: Any]  {
         return [
@@ -33,7 +34,8 @@ struct Restaurant {
             "street": street,
             "postalCode": postalCode,
             "confirmation": confirmation,
-            "imageFilePath": imageFilePath
+            "imageFilePath": imageFilePath,
+            "cuisine": cuisine
         ]
     }
 }
@@ -85,10 +87,11 @@ extension Restaurant: DocumentSerializable {
             let postalCode = dictionary["postalCode"] as? String,
             let city = dictionary["city"] as? String,
             let confirmation = dictionary["confirmation"] as? String,
-            let imageFilePath = dictionary["imageFilePath"] as? String
+            let imageFilePath = dictionary["imageFilePath"] as? String,
+            let cuisine = dictionary["cuisine"] as? String
             else { return nil }
         
-        self.init(name: name, street: street, postalCode: postalCode, city: city, confirmation: confirmation, imageFilePath: imageFilePath)
+        self.init(name: name, street: street, postalCode: postalCode, city: city, confirmation: confirmation, imageFilePath: imageFilePath, cuisine: cuisine)
     }
 }
 

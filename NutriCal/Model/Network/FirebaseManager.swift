@@ -117,14 +117,12 @@ class FirebaseManager {
         })
     }
     
-    func fetchMenu(restaurantIdentifier: RestaurantIdentifier, completion: @escaping (_ internalMenus: [InternalMenu]?, _ hasMenus: Bool) -> Void) {
+    func fetchMenu(restaurantIdentifier: RestaurantIdentifier, completion: @escaping (_ internalMenus: InternalMenu?, _ hasMenu: Bool) -> Void) {
         
         let ref = self.db
             .collection("restaurantOwner").document((Auth.auth().currentUser?.uid)!)
             .collection("restaurants").document(restaurantIdentifier.documentIdentifier)
             .collection("menu")
-        
-        var internalMenus = [InternalMenu]()
         
         ref.getDocuments { (querySnapshot, err) in
             
@@ -135,18 +133,40 @@ class FirebaseManager {
                     
                     querySnapshot?.documents.forEach({ (document) in
                         
-                        print("id", document.documentID)
+                        let menuRef = ref.document(document.documentID)
                         
-                        let menuDocRef = ref.document(document.documentID)
-                        self.fetchMenuDocument(documentRef: menuDocRef, completion: { (menu) in
-                            let foodRef = menuDocRef.collection("food")
-                            self.fetchFoodDocument(foodRef: foodRef, menu: menu, completion: { (internalMenu) in
-                                internalMenus.append(internalMenu)
-                            })
+                        menuRef.getDocument(completion: { (snapshot, err) in
+                            if let err = err {
+                                print("Error getting documents: \(err)")
+                            } else {
+                                
+                                if let menu = snapshot.flatMap({
+                                    $0.data().flatMap({ (data) in
+                                        return Menu(dictionary: data)
+                                    })
+                                }) {
+    
+                                    let foodRef = menuRef.collection("food")
+                                    
+                                    foodRef.getDocuments(completion: { (querySnapshot, err) in
+                                        if let err = err {
+                                            print("Error getting documents: \(err)")
+                                        } else {
+                                            if let food = querySnapshot?.documents.flatMap({
+                                                $0.data().flatMap({ (data) in
+                                                    return Food(dictionary: data)
+                                                })
+                                            }) {
+                                                let internalMenu = InternalMenu(menu: menu, foods: food)
+//                                                print(internalMenu)
+                                                completion(internalMenu, true)
+                                            }
+                                        }
+                                    })
+                                }
+                            }
                         })
                     })
-                    completion(internalMenus, true)
-                    print(internalMenus)
                 }
                 else {
                     completion(nil, false)
@@ -155,38 +175,7 @@ class FirebaseManager {
         }
     }
     
-    
-    
-    //                        menuRef.getDocument(completion: { (snapshot, err) in
-    //                            if let err = err {
-    //                                print("Error getting documents: \(err)")
-    //                            } else {
-    //
-    //                                if let menu = snapshot.flatMap({
-    //                                    $0.data().flatMap({ (data) in
-    //                                        return Menu(dictionary: data)
-    //                                    })
-    //                                }) {
-    
-    //                                    let foodRef = menuRef.collection("food")
-    
-    //                                    foodRef.getDocuments(completion: { (querySnapshot, err) in
-    //                                        if let err = err {
-    //                                            print("Error getting documents: \(err)")
-    //                                        } else {
-    //                                            if let food = querySnapshot?.documents.flatMap({
-    //                                                $0.data().flatMap({ (data) in
-    //                                                    return Food(dictionary: data)
-    //                                                })
-    //                                            }) {
-    //                                                print("menu", menu)
-    //                                                print("food", food)
-    //                                                internalMenu.append(InternalMenu(menu: menu, foods: food))
-    //                                            }
-    //                                        }
-    //                                    })
-    
-    func addRestaurantToCurrentUser(with name: String, street: String, postalCode: String, city: String, filePath: String, completion: @escaping () -> Void) {
+    func addRestaurantToCurrentUser(with name: String, street: String, postalCode: String, city: String, filePath: String, cuisine: String, completion: @escaping () -> Void) {
         
         let batch = db.batch()
         
@@ -194,8 +183,7 @@ class FirebaseManager {
             .collection("restaurants").document()
         
         self.upload(file: filePath) { (downloadUrl) in
-            
-            let restaurant = Restaurant(name: name, street: street, postalCode: postalCode, city: city, confirmation: "PENDING", imageFilePath: downloadUrl)
+            let restaurant = Restaurant(name: name, street: street, postalCode: postalCode, city: city, confirmation: "PENDING", imageFilePath: downloadUrl, cuisine: cuisine)
             batch.setData(restaurant.dictionary, forDocument: restaurants)
             
             batch.commit() { err in

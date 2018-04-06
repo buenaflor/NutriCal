@@ -8,16 +8,19 @@
 
 import UIKit
 
+import Cosmos
+
 class RestaurantView: UIView {
     
     var dataSource: Any? {
         didSet {
             guard
-                let restaurant = dataSource as? Restaurant,
-                let imgURL = URL(string: restaurant.imageFilePath)
+                let restaurant = dataSource as? RestaurantIdentifier,
+                let imgURL = URL(string: restaurant.restaurant.imageFilePath)
                 else { return }
             
-            self.restaurantNameLabel.text = restaurant.name
+            self.restaurantNameLabel.text = restaurant.restaurant.name
+            self.restaurantCuisineLabel.text = restaurant.restaurant.cuisine
             self.restaurantImageView.image = #imageLiteral(resourceName: "restaurant-logo2")
 //            self.restaurantImageView.sd_setImage(with: imgURL)
         }
@@ -26,6 +29,23 @@ class RestaurantView: UIView {
     private let restaurantNameLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "Avenir-Black", size: 23)
+        label.numberOfLines = 1
+        return label
+    }()
+    
+    private let cosmosView: CosmosView = {
+        let view = CosmosView()
+        view.rating = 1
+        view.text = "(32)"
+        view.settings.starSize = 30
+        view.settings.textFont = UIFont(name: "Avenir", size: 16)!
+        view.isUserInteractionEnabled = false
+        return view
+    }()
+    
+    private let restaurantCuisineLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.italicSystemFont(ofSize: 19)
         label.numberOfLines = 1
         return label
     }()
@@ -41,6 +61,10 @@ class RestaurantView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
     
+        self.cosmosView.didFinishTouchingCosmos = { rating in
+            print(rating)
+        }
+        
         self.setupView()
     }
     
@@ -70,6 +94,16 @@ class RestaurantView: UIView {
         
         self.add(subview: restaurantNameLabel) { (v, p) in [
             v.topAnchor.constraint(equalTo: p.topAnchor, constant: 30),
+            v.leadingAnchor.constraint(equalTo: leftContainerView.trailingAnchor, constant: 20)
+            ]}
+        
+        self.add(subview: cosmosView) { (v, p) in [
+            v.topAnchor.constraint(equalTo: restaurantNameLabel.bottomAnchor, constant: 15),
+            v.leadingAnchor.constraint(equalTo: leftContainerView.trailingAnchor, constant: 18),
+            ]}
+        
+        self.add(subview: restaurantCuisineLabel) { (v, p) in [
+            v.topAnchor.constraint(equalTo: cosmosView.bottomAnchor, constant: 15),
             v.leadingAnchor.constraint(equalTo: leftContainerView.trailingAnchor, constant: 20)
             ]}
         

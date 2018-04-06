@@ -70,6 +70,14 @@ class AddRestaurantsViewController: UIViewController {
         return textField
     }()
     
+    private lazy var cuisineTextField: UITextField = {
+        let textField = UITextField()
+        textField.placeholder = "Cuisine/Genre"
+        textField.delegate = self
+        textField.backgroundColor = UIColor.StandardMode.TabBarColor
+        return textField
+    }()
+    
     private lazy var postalCodeTextField: UITextField = {
         let textField = UITextField()
         textField.placeholder = "PostalCode"
@@ -136,8 +144,15 @@ class AddRestaurantsViewController: UIViewController {
             v.heightAnchor.constraint(equalToConstant: 50)
             ]}
         
-        self.view.add(subview: streetTextField) { (v, p) in [
+        self.view.add(subview: cuisineTextField) { (v, p) in [
             v.topAnchor.constraint(equalTo: titleTextField.bottomAnchor, constant: 30),
+            v.leadingAnchor.constraint(equalTo: p.leadingAnchor, constant: 30),
+            v.trailingAnchor.constraint(equalTo: p.trailingAnchor, constant: -30),
+            v.heightAnchor.constraint(equalToConstant: 50)
+            ]}
+        
+        self.view.add(subview: streetTextField) { (v, p) in [
+            v.topAnchor.constraint(equalTo: cuisineTextField.bottomAnchor, constant: 30),
             v.leadingAnchor.constraint(equalTo: p.leadingAnchor, constant: 30),
             v.trailingAnchor.constraint(equalTo: p.trailingAnchor, constant: -30),
             v.heightAnchor.constraint(equalToConstant: 50)
@@ -182,13 +197,14 @@ class AddRestaurantsViewController: UIViewController {
             let street = streetTextField.text,
             let postalCode = postalCodeTextField.text,
             let city = cityTextField.text,
+            let cuisine = cuisineTextField.text,
             let imgFilePathString = imageFilePath
             else { return }
         
         SwiftSpinner.show("Adding Restaurant: \(name)")
         
         let manager = FirebaseManager()
-        manager.addRestaurantToCurrentUser(with: name, street: street, postalCode: postalCode, city: city, filePath: imgFilePathString, completion: {
+        manager.addRestaurantToCurrentUser(with: name, street: street, postalCode: postalCode, city: city, filePath: imgFilePathString, cuisine: cuisine, completion: {
             
             SwiftSpinner.hide()
             

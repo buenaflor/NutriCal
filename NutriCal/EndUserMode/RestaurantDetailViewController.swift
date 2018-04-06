@@ -19,11 +19,13 @@ class RestaurantDetailViewController: BaseImagePickerViewController {
             
             guard let restaurantIdentifier = restaurantIdentifier else { return }
             guard let imgURL = URL(string: restaurantIdentifier.restaurant.imageFilePath) else { return }
-            
-            self.firebaseManager.fetchMenu(restaurantIdentifier: restaurantIdentifier, completion: { (internalMenus, hasMenu) in
+
+            self.firebaseManager.fetchMenu(restaurantIdentifier: restaurantIdentifier, completion: { (internalMenu, hasMenu) in
+  
                 if hasMenu {
-                    guard let internalMenus = internalMenus else { return }
-                    self.menus = internalMenus
+                    guard let internalMenu = internalMenu else { return }
+                    print(internalMenu)
+                    self.menus.append(internalMenu)
                     self.setupCountLabelText(for: self.menuCountLabel, count: self.menus.count, searchString: "Menus")
                     self.tableView.reloadData()
                     SwiftSpinner.hide()
@@ -34,7 +36,6 @@ class RestaurantDetailViewController: BaseImagePickerViewController {
                     SwiftSpinner.hide()
                 }
             })
-            
             
             self.imagePickerButton.sd_setImage(with: imgURL, for: .normal)
             self.setupCountLabelText(for: reviewsCountLabel, count: 0, searchString: "Reviews")

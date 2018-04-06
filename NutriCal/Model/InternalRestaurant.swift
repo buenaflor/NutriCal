@@ -14,7 +14,7 @@ struct InternalMenu {
 }
 
 struct InternalRestaurant {
-    let restaurant: Restaurant
-    let internalMenu: [InternalMenu]
+    let restaurant: RestaurantIdentifier
+    var internalMenu: [InternalMenu]
 }
 

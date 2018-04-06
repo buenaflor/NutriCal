@@ -16,6 +16,7 @@ target 'NutriCal' do
   pod 'SDWebImage'
   pod 'RangeSeekSlider'
   pod 'AMPopTip'
+  pod 'Cosmos', '~> 15.0'
 
   target 'NutriCalTests' do
     inherit! :search_paths

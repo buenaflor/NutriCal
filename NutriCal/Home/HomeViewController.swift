@@ -30,36 +30,23 @@ class HomeViewController: UIViewController {
     
     private var internalRestaurants = [InternalRestaurant]()
     
+    private var menus = [InternalMenu]()
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-//        SwiftSpinner.show("Loading Restaurants")
-//        let firebaseManager = FirebaseManager()
-//        
-//        firebaseManager.fetchRestaurant { (restaurantIdentifiers) in
-//            restaurantIdentifiers.forEach({ restaurantIdentifier in
-//
-//                firebaseManager.fetchMenu(restaurantIdentifier: restaurantIdentifier, completion: { (internalMenus, hasMenu) in
-//                    
-//                    print(restaurantIdentifier.restaurant.name)
-//                    if hasMenu {
-//                        
-//                        guard let internalMenus = internalMenus else { return }
-//                        
-//                        let internalRestaurant = InternalRestaurant(restaurant: restaurantIdentifier.restaurant, internalMenu: internalMenus)
-//                        self.internalRestaurants.append(internalRestaurant)
-//                        
-//                        self.collectionView.reloadData()
-//                        SwiftSpinner.hide()
-//                    
-//                    }
-//                    else {
-//                        print(restaurantIdentifier.restaurant.name, "has no food yet")
-//                    }
-//                })
-//            })
-//        }
-    
+        self.loadData { restaurantIdentifier, menu in
+            for (index, internalRestaurant) in self.internalRestaurants.enumerated() {
+                if internalRestaurant.restaurant.documentIdentifier == restaurantIdentifier.documentIdentifier {
+                    self.internalRestaurants[index].internalMenu.append(menu)
+                }
+            }
+            
+            self.collectionView.reloadData()
+            SwiftSpinner.hide()
+        }
+        
         self.setupView()
     }
     
@@ -67,6 +54,37 @@ class HomeViewController: UIViewController {
         super.viewWillAppear(animated)
         
         print("appeared")
+    }
+    
+    private func loadData(completion: @escaping (_ restaurantIdentifier: RestaurantIdentifier, _ menu: InternalMenu) -> Void) {
+        
+        SwiftSpinner.show("Loading Restaurants")
+        
+        let firebaseManager = FirebaseManager()
+        
+        firebaseManager.fetchRestaurant { (restaurantIdentifiers) in
+            
+            restaurantIdentifiers.forEach({ restaurantIdentifier in
+                
+                let internalMenus = [InternalMenu]()
+                
+                firebaseManager.fetchMenu(restaurantIdentifier: restaurantIdentifier, completion: { (internalMenu, hasMenu) in
+                    
+                    if hasMenu {
+                        guard let internalMenu = internalMenu else { return }
+                        completion(restaurantIdentifier, internalMenu)
+                    }
+                    else {
+                        return
+                    }
+                })
+                
+                
+                let internalRestaurant = InternalRestaurant(restaurant: restaurantIdentifier, internalMenu: internalMenus)
+                self.internalRestaurants.append(internalRestaurant)
+            })
+            
+        }
     }
     
     private func createSideMenu() {
@@ -126,7 +144,9 @@ extension HomeViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(RestaurantMenuCell.self, forIndexPath: indexPath)
         
-        cell.dataSource = self.internalRestaurants[indexPath.row].restaurant
+        print(self.internalRestaurants.count)
+        
+        cell.dataSource = self.internalRestaurants[indexPath.row]
         cell.delegate = self
 
         return cell

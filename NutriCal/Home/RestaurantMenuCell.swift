@@ -16,8 +16,13 @@ class RestaurantMenuCell: UICollectionViewCell {
     
     var dataSource: Any? {
         didSet {
-            guard let restaurant = dataSource as? Restaurant else { return }
-            restaurantView.dataSource = restaurant
+            guard let internalRestaurant = dataSource as? InternalRestaurant else { return }
+            
+            if internalRestaurant.internalMenu.count != 0 {
+                print(internalRestaurant.internalMenu[0])
+            }
+            
+            restaurantView.dataSource = internalRestaurant.restaurant
         }
     }
     
@@ -31,7 +36,7 @@ class RestaurantMenuCell: UICollectionViewCell {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.dataSource = self
         collectionView.delegate = self
-        collectionView.register(RestaurantMenuGaleryCell.self)
+        collectionView.register(RestaurantMenuGalleryCell.self)
         collectionView.backgroundColor = .white
         return collectionView
     }()
@@ -85,12 +90,20 @@ class RestaurantMenuCell: UICollectionViewCell {
 extension RestaurantMenuCell: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 10
+        guard let internalRestaurant = self.dataSource as? InternalRestaurant else { return 0 }
+        
+        return internalRestaurant.internalMenu.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(RestaurantMenuGaleryCell.self, forIndexPath: indexPath)
+        let cell = collectionView.dequeueReusableCell(RestaurantMenuGalleryCell.self, forIndexPath: indexPath)
         
+        guard let internalRestaurant = self.dataSource as? InternalRestaurant else { return UICollectionViewCell() }
+        
+        if internalRestaurant.internalMenu.count != 0 {
+            cell.dataSource = internalRestaurant.internalMenu[0].foods[indexPath.row]
+        }
+            
         return cell
     }
 }
