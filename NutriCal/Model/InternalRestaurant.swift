@@ -10,7 +10,7 @@ import UIKit
 
 struct InternalMenu {
     let menu: Menu
-    let foods: [Food]
+    var foods: [Food]
 }
 
 struct InternalRestaurant {

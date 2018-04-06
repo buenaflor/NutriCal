@@ -19,8 +19,6 @@ class BaseImagePickerViewController: UIViewController {
         return button
     }()
     
-    
-    
     var imageFilePath: String?
     
 }

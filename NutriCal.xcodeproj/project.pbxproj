@@ -37,9 +37,9 @@
 		34BAB23520719B9100E39E8B /* FilterCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BAB23420719B9100E39E8B /* FilterCell.swift */; };
 		34BAB23720719BB900E39E8B /* SideMenuCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BAB23620719BB900E39E8B /* SideMenuCell.swift */; };
 		34C5C84D2074E8A700498B6E /* BaseImagePickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C5C84C2074E8A700498B6E /* BaseImagePickerViewController.swift */; };
-		34C5C84F2074F42C00498B6E /* AddRestaurantMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C5C84E2074F42C00498B6E /* AddRestaurantMenuViewController.swift */; };
+		34C5C84F2074F42C00498B6E /* AddMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C5C84E2074F42C00498B6E /* AddMenuViewController.swift */; };
 		34C5C8522074F53900498B6E /* RestaurantDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C5C8512074F53900498B6E /* RestaurantDetailViewController.swift */; };
-		34C5C85520754A9200498B6E /* AddMenuFoodViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C5C85420754A9200498B6E /* AddMenuFoodViewController.swift */; };
+		34C5C85520754A9200498B6E /* AddFoodViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C5C85420754A9200498B6E /* AddFoodViewController.swift */; };
 		34C5C8582076022100498B6E /* AddIngredientsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C5C8572076022100498B6E /* AddIngredientsViewController.swift */; };
 		34C5C85A2076147C00498B6E /* InternalRestaurant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C5C8592076147C00498B6E /* InternalRestaurant.swift */; };
 		34D521A62071BCA800528852 /* FirebaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D521A52071BCA800528852 /* FirebaseManager.swift */; };
@@ -106,9 +106,9 @@
 		34BAB23420719B9100E39E8B /* FilterCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterCell.swift; sourceTree = "<group>"; };
 		34BAB23620719BB900E39E8B /* SideMenuCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenuCell.swift; sourceTree = "<group>"; };
 		34C5C84C2074E8A700498B6E /* BaseImagePickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseImagePickerViewController.swift; sourceTree = "<group>"; };
-		34C5C84E2074F42C00498B6E /* AddRestaurantMenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddRestaurantMenuViewController.swift; sourceTree = "<group>"; };
+		34C5C84E2074F42C00498B6E /* AddMenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddMenuViewController.swift; sourceTree = "<group>"; };
 		34C5C8512074F53900498B6E /* RestaurantDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestaurantDetailViewController.swift; sourceTree = "<group>"; };
-		34C5C85420754A9200498B6E /* AddMenuFoodViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddMenuFoodViewController.swift; sourceTree = "<group>"; };
+		34C5C85420754A9200498B6E /* AddFoodViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddFoodViewController.swift; sourceTree = "<group>"; };
 		34C5C8572076022100498B6E /* AddIngredientsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddIngredientsViewController.swift; sourceTree = "<group>"; };
 		34C5C8592076147C00498B6E /* InternalRestaurant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InternalRestaurant.swift; sourceTree = "<group>"; };
 		34D521A52071BCA800528852 /* FirebaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseManager.swift; sourceTree = "<group>"; };
@@ -368,9 +368,9 @@
 		34C5C85320754A7D00498B6E /* Add Components */ = {
 			isa = PBXGroup;
 			children = (
-				34C5C84E2074F42C00498B6E /* AddRestaurantMenuViewController.swift */,
+				34C5C84E2074F42C00498B6E /* AddMenuViewController.swift */,
 				34D521A92072DFBD00528852 /* AddRestaurantViewController.swift */,
-				34C5C85420754A9200498B6E /* AddMenuFoodViewController.swift */,
+				34C5C85420754A9200498B6E /* AddFoodViewController.swift */,
 				34C5C8572076022100498B6E /* AddIngredientsViewController.swift */,
 			);
 			path = "Add Components";
@@ -767,8 +767,8 @@
 				34BAB225206FF7F200E39E8B /* MapViewController.swift in Sources */,
 				34BAB22D207189BA00E39E8B /* User.swift in Sources */,
 				34BAB23720719BB900E39E8B /* SideMenuCell.swift in Sources */,
-				34C5C84F2074F42C00498B6E /* AddRestaurantMenuViewController.swift in Sources */,
-				34C5C85520754A9200498B6E /* AddMenuFoodViewController.swift in Sources */,
+				34C5C84F2074F42C00498B6E /* AddMenuViewController.swift in Sources */,
+				34C5C85520754A9200498B6E /* AddFoodViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

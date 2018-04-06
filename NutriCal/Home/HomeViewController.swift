@@ -33,32 +33,32 @@ class HomeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        SwiftSpinner.show("Loading Restaurants")
-        let firebaseManager = FirebaseManager()
-        
-        firebaseManager.fetchRestaurant { (restaurantIdentifiers) in
-            restaurantIdentifiers.forEach({ restaurantIdentifier in
-
-                firebaseManager.fetchMenu(restaurantIdentifier: restaurantIdentifier, completion: { (internalMenus, hasMenu) in
-                    
-                    print(restaurantIdentifier.restaurant.name)
-                    if hasMenu {
-                        
-                        guard let internalMenus = internalMenus else { return }
-                        
-                        let internalRestaurant = InternalRestaurant(restaurant: restaurantIdentifier.restaurant, internalMenu: internalMenus)
-                        self.internalRestaurants.append(internalRestaurant)
-                        
-                        self.collectionView.reloadData()
-                        SwiftSpinner.hide()
-                    
-                    }
-                    else {
-                        print(restaurantIdentifier.restaurant.name, "has no food yet")
-                    }
-                })
-            })
-        }
+//        SwiftSpinner.show("Loading Restaurants")
+//        let firebaseManager = FirebaseManager()
+//        
+//        firebaseManager.fetchRestaurant { (restaurantIdentifiers) in
+//            restaurantIdentifiers.forEach({ restaurantIdentifier in
+//
+//                firebaseManager.fetchMenu(restaurantIdentifier: restaurantIdentifier, completion: { (internalMenus, hasMenu) in
+//                    
+//                    print(restaurantIdentifier.restaurant.name)
+//                    if hasMenu {
+//                        
+//                        guard let internalMenus = internalMenus else { return }
+//                        
+//                        let internalRestaurant = InternalRestaurant(restaurant: restaurantIdentifier.restaurant, internalMenu: internalMenus)
+//                        self.internalRestaurants.append(internalRestaurant)
+//                        
+//                        self.collectionView.reloadData()
+//                        SwiftSpinner.hide()
+//                    
+//                    }
+//                    else {
+//                        print(restaurantIdentifier.restaurant.name, "has no food yet")
+//                    }
+//                })
+//            })
+//        }
     
         self.setupView()
     }

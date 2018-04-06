@@ -27,8 +27,10 @@ class RestaurantDetailViewController: BaseImagePickerViewController {
                     self.setupCountLabelText(for: self.menuCountLabel, count: self.menus.count, searchString: "Menus")
                     self.tableView.reloadData()
                     SwiftSpinner.hide()
+                    print("wasch los?")
                 }
                 else {
+                    print("wasch los? kein menu?")
                     SwiftSpinner.hide()
                 }
             })

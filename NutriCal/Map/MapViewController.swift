@@ -58,7 +58,10 @@ class MapViewController: UIViewController {
         self.setupView()
         self.determineMyCurrentLocation()
 //        self.fetchAnnotationData()
-        
+    }
+    
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
         self.addAnnotations()
     }
     

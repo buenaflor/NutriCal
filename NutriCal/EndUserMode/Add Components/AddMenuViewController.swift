@@ -56,7 +56,7 @@ class AddRestaurantMenuViewController: UIViewController {
     
     private lazy var titleTextField: UITextField = {
         let textField = UITextField()
-        textField.placeholder = "Enter Restaurant Name"
+        textField.placeholder = "Enter Menu Name"
         textField.delegate = self
         textField.backgroundColor = .white
         textField.addSeparatorLine(color: UIColor.StandardMode.TabBarColor)
@@ -153,17 +153,20 @@ class AddRestaurantMenuViewController: UIViewController {
             print("Error")
             return
         }
-//        let menu = Menu(title: title, lowerPriceRange: Double(self.rangeSlider.selectedMinValue), higherPiceRange: Double(self.rangeSlider.selectedMaxValue))
-//        let internalMenu = InternalMenu(menu: menu, foods: self.foods)
-//        
-        let food = Food(name: "Lasagna", isVegan: false, ingredients: ["Tomato", "Potato", "Cheese"], kCal: 600, price: 12.99, imageLink: "")
-        let food2 = Food(name: "Spaghetti", isVegan: false, ingredients: ["Ketchup", "Pasta", "Cheese"], kCal: 312, price: 5.99, imageLink: "")
-        let foods = [food, food2]
-
-        let menu = Menu(title: "Italian", lowerPriceRange: 3.9, higherPiceRange: 8.0)
-        let internalMenu = InternalMenu(menu: menu, foods: foods)
+        let menu = Menu(title: title, lowerPriceRange: Double(self.rangeSlider.selectedMinValue), higherPiceRange: Double(self.rangeSlider.selectedMaxValue))
+        let internalMenu = InternalMenu(menu: menu, foods: self.foods)
+//
+//        let food = Food(name: "Lasagna", isVegan: false, ingredients: ["Tomato", "Potato", "Cheese"], kCal: 600, price: 12.99, imageLink: "")
+//        let food2 = Food(name: "Spaghetti", isVegan: false, ingredients: ["Ketchup", "Pasta", "Cheese"], kCal: 312, price: 5.99, imageLink: "")
+//        let foods = [food, food2]
+//
+//        let menu = Menu(title: "Italian", lowerPriceRange: 3.9, higherPiceRange: 8.0)
+//        let internalMenu = InternalMenu(menu: menu, foods: foods)
         
         self.delegate?.addRestaurantMenuViewController(self, didReceive: internalMenu)
+//        self.firebaseManager.uploadFoodImages(internalMenu: internalMenu) { (menu) in
+//            print("")
+//        }
         self.firebaseManager.addMenuToRestaurant(internalMenu: internalMenu, restaurantIdentifier: restaurantIdentifier, completion: { })
         
         self.navigationController?.popViewController(animated: true)
