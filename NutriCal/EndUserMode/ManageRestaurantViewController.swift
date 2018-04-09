@@ -145,7 +145,7 @@ extension ManageRestaurantsViewController: UITableViewDelegate {
 //        let addRestaurantMenuViewController = AddRestaurantMenuViewController()
 //        addRestaurantMenuViewController.restaurantIdentifier = restaurantIdentifiers[indexPath.row]
         
-        let restaurantDetailViewController = RestaurantDetailViewController()
+        let restaurantDetailViewController = RestaurantOwnerDetailViewController()
         restaurantDetailViewController.restaurantIdentifier = restaurantIdentifiers[indexPath.row]
         
         self.navigationController?.pushViewController(restaurantDetailViewController, animated: true)

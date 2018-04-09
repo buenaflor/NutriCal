@@ -136,8 +136,9 @@ extension HomeViewController: UICollectionViewDataSource {
 extension HomeViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let restaurantViewController = RestaurantViewController()
-        self.navigationController?.pushViewController(restaurantViewController, animated: true)
+        let restaurantEndUserDetailViewController = RestaurantEndUserDetailViewController()
+        restaurantEndUserDetailViewController.restaurantIdentifier = self.restaurantIdentifiers[indexPath.row]
+        self.navigationController?.pushViewController(restaurantEndUserDetailViewController, animated: true)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
