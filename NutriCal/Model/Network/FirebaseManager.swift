@@ -156,7 +156,7 @@ class FirebaseManager {
         
         for (index, food) in internalMenu.foods.enumerated() {
             self.upload(file: food.imageLink, completion: { (downloadURL) in
-                menu.foods[index] = Food(name: food.name, isVegan: food.isVegan, ingredients: food.ingredients, kCal: food.kCal, price: food.price, imageLink: downloadURL)
+                menu.foods[index] = Food(name: food.name, description: food.description, isVegan: food.isVegan, ingredients: food.ingredients, kCal: food.kCal, price: food.price, imageLink: downloadURL)
             })
         }
         

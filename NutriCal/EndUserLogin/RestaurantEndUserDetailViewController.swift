@@ -10,13 +10,17 @@ import UIKit
 
 class RestaurantEndUserDetailViewController: BaseRestaurantDetailViewController {
     
-    private lazy var collectionView: UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
-        let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        cv.dataSource = self
-        cv.delegate = self
-        cv.register(UICollectionViewCell.self)
-        return cv
+    private var internalMenus = [InternalMenu]()
+    
+    private lazy var tableView: UITableView = {
+        let tableView = UITableView()
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.register(RestaurantEnduserDetailFoodCell.self)
+        tableView.backgroundColor = UIColor.StandardMode.HomeBackground
+        tableView.rowHeight = UITableViewAutomaticDimension
+        tableView.estimatedRowHeight = 110
+        return tableView
     }()
 
     override func viewDidLoad() {
@@ -35,7 +39,7 @@ class RestaurantEndUserDetailViewController: BaseRestaurantDetailViewController 
     
     private func configureConstraints() {
         
-        self.view.add(subview: collectionView) { (v, p) in [
+        self.view.add(subview: tableView) { (v, p) in [
             v.topAnchor.constraint(equalTo: self.separatorLine.bottomAnchor, constant: 10),
             v.leadingAnchor.constraint(equalTo: p.leadingAnchor),
             v.trailingAnchor.constraint(equalTo: p.trailingAnchor),
@@ -47,30 +51,56 @@ class RestaurantEndUserDetailViewController: BaseRestaurantDetailViewController 
     }
 }
 
-extension RestaurantEndUserDetailViewController: UICollectionViewDataSource {
+extension RestaurantEndUserDetailViewController: UITableViewDataSource {
     
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        
-        return menus.count
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return self.internalMenus.count
+    }
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return internalMenus[section].foods.count
     }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(UICollectionViewCell.self, forIndexPath: indexPath)
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(RestaurantEnduserDetailFoodCell.self, forIndexPath: indexPath)
         
-        cell.backgroundColor = .red
+        cell.dataSource = self.internalMenus[indexPath.section].foods[indexPath.row]
         
         return cell
     }
+
 }
 
-extension RestaurantEndUserDetailViewController: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print("sup")
+extension RestaurantEndUserDetailViewController: UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return internalMenus[section].menu.title
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let view = UIView()
+        view.backgroundColor = UIColor.StandardMode.HomeBackground
+        return view
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 50
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        print("selected")
     }
 }
 
 extension RestaurantEndUserDetailViewController: BaseRestaurantDetailViewControllerDelegate {
+    
     func baseRestaurantDetailViewController(_ baseRestaurantDetailViewController: BaseRestaurantDetailViewController, didSet restaurant: RestaurantIdentifier, menus: [Menu]) {
-        self.collectionView.reloadData()
+        
+        menus.forEach { (menu) in
+            self.firebaseManager.fetchFood(restaurantIdentifier: restaurant, menu: menu) { (internalMenu) in
+                self.internalMenus.append(internalMenu)
+                self.tableView.reloadData()
+            }
+        }
     }
 }

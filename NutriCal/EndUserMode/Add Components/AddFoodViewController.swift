@@ -31,6 +31,15 @@ class AddMenuFoodViewController: BaseImagePickerViewController {
         return textField
     }()
     
+    private lazy var descriptionTextField: UITextField = {
+        let textField = UITextField()
+        textField.placeholder = "Enter Description"
+        textField.delegate = self
+        textField.backgroundColor = .white
+        textField.addSeparatorLine(color: UIColor.StandardMode.TabBarColor)
+        return textField
+    }()
+    
     private lazy var priceTextField: UITextField = {
         let textField = UITextField()
         textField.placeholder = "Enter Price"
@@ -119,8 +128,15 @@ class AddMenuFoodViewController: BaseImagePickerViewController {
             v.heightAnchor.constraint(equalToConstant: 50)
             ]}
         
-        self.view.add(subview: priceTextField) { (v, p) in [
+        self.view.add(subview: descriptionTextField) { (v, p) in [
             v.topAnchor.constraint(equalTo: titleTextField.bottomAnchor, constant: 30),
+            v.leadingAnchor.constraint(equalTo: p.leadingAnchor, constant: 30),
+            v.trailingAnchor.constraint(equalTo: p.trailingAnchor, constant: -30),
+            v.heightAnchor.constraint(equalToConstant: 50)
+            ]}
+        
+        self.view.add(subview: priceTextField) { (v, p) in [
+            v.topAnchor.constraint(equalTo: descriptionTextField.bottomAnchor, constant: 30),
             v.leadingAnchor.constraint(equalTo: p.leadingAnchor, constant: 30),
             v.trailingAnchor.constraint(equalTo: p.trailingAnchor, constant: -30),
             v.heightAnchor.constraint(equalToConstant: 50)
@@ -163,9 +179,16 @@ class AddMenuFoodViewController: BaseImagePickerViewController {
     
     @objc private func confirmRightBarButtonItemTapped() {
         
-        guard let kCal = Int(kCalTextField.text!), let price = Double(priceTextField.text!), let name = titleTextField.text, let imageFilePath = self.imageFilePath, let image = imagePickerButton.imageView?.image else { return }
+        guard
+            let kCal = Int(kCalTextField.text!),
+            let price = Double(priceTextField.text!),
+            let description = descriptionTextField.text,
+            let name = titleTextField.text,
+            let imageFilePath = self.imageFilePath,
+            let image = imagePickerButton.imageView?.image
+            else { return }
         
-        let food = Food(name: name, isVegan: true, ingredients: self.ingredients, kCal: kCal, price: price, imageLink: imageFilePath)
+        let food = Food(name: name, description: description, isVegan: true, ingredients: self.ingredients, kCal: kCal, price: price, imageLink: imageFilePath)
         self.delegate?.addMenuFoodViewController(self, didReceive: food, image: image)
         self.navigationController?.popViewController(animated: true)
         

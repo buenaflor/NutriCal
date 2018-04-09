@@ -39,7 +39,6 @@ class BaseRestaurantDetailViewController: BaseImagePickerViewController {
             self.imagePickerButton.sd_setImage(with: imgURL, for: .normal)
             self.setupCountLabelText(for: reviewsCountLabel, count: 0, searchString: "Reviews")
             self.setupCountLabelText(for: menuCountLabel, count: self.menus.count, searchString: "Menus")
-            self.ratingLabel.text = "Avg. Rating: 4.3"
             
             self.nameLabel.text = restaurantIdentifier.restaurant.name
             
@@ -66,14 +65,6 @@ class BaseRestaurantDetailViewController: BaseImagePickerViewController {
         return label
     }()
     
-    private let ratingLabel: UILabel = {
-        let label = UILabel()
-        label.numberOfLines = 1
-        label.font = UIFont.systemFont(ofSize: 17)
-        label.textColor = .lightGray
-        return label
-    }()
-    
     private let nameLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "Futura", size: 22.0)
@@ -97,7 +88,7 @@ class BaseRestaurantDetailViewController: BaseImagePickerViewController {
     private let cosmosView: CosmosView = {
         let view = CosmosView()
         view.rating = 1
-        view.text = "(32)"
+        view.text = "(Avg: 4.3 - 32 Ratings)"
         view.settings.starSize = 30
         view.settings.textFont = UIFont(name: "Avenir", size: 16)!
         view.isUserInteractionEnabled = false
@@ -139,14 +130,8 @@ class BaseRestaurantDetailViewController: BaseImagePickerViewController {
             v.trailingAnchor.constraint(equalTo: p.trailingAnchor, constant: -20)
             ]}
         
-        self.view.add(subview: ratingLabel) { (v, p) in [
-            v.topAnchor.constraint(equalTo: menuCountLabel.bottomAnchor, constant: 15),
-            v.leadingAnchor.constraint(equalTo: imagePickerButton.trailingAnchor, constant: 25),
-            v.trailingAnchor.constraint(equalTo: cosmosView.leadingAnchor)
-            ]}
-        
         self.view.add(subview: nameLabel) { (v, p) in [
-            v.topAnchor.constraint(equalTo: ratingLabel.bottomAnchor, constant: 20),
+            v.topAnchor.constraint(equalTo: cosmosView.bottomAnchor, constant: 20),
             v.leadingAnchor.constraint(equalTo: p.leadingAnchor, constant: 25)
             ]}
         

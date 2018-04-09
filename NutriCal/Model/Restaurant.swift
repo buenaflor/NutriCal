@@ -61,6 +61,7 @@ struct Menu {
 
 struct Food {
     let name: String
+    let description: String
     let isVegan: Bool
     let ingredients: [String]
     let kCal: Int
@@ -111,6 +112,7 @@ extension Food: DocumentSerializable {
     init?(dictionary: [String : Any]) {
         guard
             let name = dictionary["name"] as? String,
+            let description = dictionary["description"] as? String,
             let isVegan = dictionary["isVegan"] as? Bool,
             let ingredients = dictionary["ingredients"] as? [String],
             let kCal = dictionary["kCal"] as? Int,
@@ -118,7 +120,7 @@ extension Food: DocumentSerializable {
             let imageLink = dictionary["imageLink"] as? String
         else { return nil }
         
-        self.init(name: name, isVegan: isVegan, ingredients: ingredients, kCal: kCal, price: price, imageLink: imageLink)
+        self.init(name: name, description: description, isVegan: isVegan, ingredients: ingredients, kCal: kCal, price: price, imageLink: imageLink)
     }
     
     

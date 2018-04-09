@@ -8,7 +8,6 @@
 
 import UIKit
 
-
 class BaseImagePickerViewController: UIViewController {
     
     let imagePickerButton: UIButton = {
@@ -20,7 +19,6 @@ class BaseImagePickerViewController: UIViewController {
     }()
     
     var imageFilePath: String?
-    
 }
 
 extension BaseImagePickerViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {

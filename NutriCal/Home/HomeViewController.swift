@@ -38,18 +38,6 @@ class HomeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-//        self.loadData { restaurantIdentifier, menu in
-//            for (index, internalRestaurant) in self.internalRestaurants.enumerated() {
-//                if internalRestaurant.restaurant.documentIdentifier == restaurantIdentifier.documentIdentifier {
-//                    self.internalRestaurants[index].internalMenu.append(menu)
-//                }
-//            }
-//
-//
-//            self.collectionView.reloadData()
-//            SwiftSpinner.hide()
-//        }
-        
         SwiftSpinner.show("Loading Restaurants")
         
         let firebaseManager = FirebaseManager()
@@ -83,8 +71,7 @@ class HomeViewController: UIViewController {
     }
     
     private func setupView() {
-        self.view.backgroundColor = UIColor(red:0.87, green:0.84, blue:0.81, alpha:1.0)
-
+        self.view.backgroundColor = UIColor.StandardMode.HomeBackground
         self.createNavigationItems()
         self.createSideMenu()
         self.configureConstraints()
@@ -97,7 +84,6 @@ class HomeViewController: UIViewController {
     
     private func configureConstraints() {
     
-        
         self.view.add(subview: self.collectionView) { (v, p) in [
             v.topAnchor.constraint(equalTo: p.safeAreaLayoutGuide.topAnchor),
             v.leadingAnchor.constraint(equalTo: p.safeAreaLayoutGuide.leadingAnchor),
