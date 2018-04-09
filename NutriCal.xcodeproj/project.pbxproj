@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		010C734064AAEB7BA7D70043 /* Pods_NutriCalTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC87FB5070DAF70F003A87CC /* Pods_NutriCalTests.framework */; };
+		343F37F4207794F700DCBE40 /* LocalCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343F37F3207794F700DCBE40 /* LocalCollection.swift */; };
+		343F37F7207B4E2200DCBE40 /* BaseRestaurantDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343F37F6207B4E2200DCBE40 /* BaseRestaurantDetailViewController.swift */; };
 		34ADA731206D7BA700C31D37 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ADA730206D7BA700C31D37 /* AppDelegate.swift */; };
 		34ADA733206D7BA700C31D37 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ADA732206D7BA700C31D37 /* TabBarController.swift */; };
 		34ADA738206D7BA700C31D37 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 34ADA737206D7BA700C31D37 /* Assets.xcassets */; };
@@ -71,6 +73,8 @@
 /* Begin PBXFileReference section */
 		28E99266B26F1FAF8A077D75 /* Pods-NutriCal.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NutriCal.release.xcconfig"; path = "Pods/Target Support Files/Pods-NutriCal/Pods-NutriCal.release.xcconfig"; sourceTree = "<group>"; };
 		293885FB3AA2CFB730D2A11A /* Pods-NutriCalUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NutriCalUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-NutriCalUITests/Pods-NutriCalUITests.release.xcconfig"; sourceTree = "<group>"; };
+		343F37F3207794F700DCBE40 /* LocalCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalCollection.swift; sourceTree = "<group>"; };
+		343F37F6207B4E2200DCBE40 /* BaseRestaurantDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseRestaurantDetailViewController.swift; sourceTree = "<group>"; };
 		34ADA72D206D7BA700C31D37 /* NutriCal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NutriCal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		34ADA730206D7BA700C31D37 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		34ADA732206D7BA700C31D37 /* TabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
@@ -353,6 +357,7 @@
 			children = (
 				34BAB21E206E659600E39E8B /* LoginBaseViewController.swift */,
 				34C5C84C2074E8A700498B6E /* BaseImagePickerViewController.swift */,
+				343F37F6207B4E2200DCBE40 /* BaseRestaurantDetailViewController.swift */,
 			);
 			path = Base;
 			sourceTree = "<group>";
@@ -387,6 +392,7 @@
 			isa = PBXGroup;
 			children = (
 				34D521A52071BCA800528852 /* FirebaseManager.swift */,
+				343F37F3207794F700DCBE40 /* LocalCollection.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -755,6 +761,7 @@
 				34BAB21D206E62CE00E39E8B /* LoginRestaurantViewController.swift in Sources */,
 				34D521A62071BCA800528852 /* FirebaseManager.swift in Sources */,
 				34B8E479206E23EA0010ADDE /* TableViewModel.swift in Sources */,
+				343F37F4207794F700DCBE40 /* LocalCollection.swift in Sources */,
 				34C5C8582076022100498B6E /* AddIngredientsViewController.swift in Sources */,
 				34C5C85A2076147C00498B6E /* InternalRestaurant.swift in Sources */,
 				34BAB23520719B9100E39E8B /* FilterCell.swift in Sources */,
@@ -765,6 +772,7 @@
 				34BAB221206ED2EA00E39E8B /* SignUpRestaurantViewController.swift in Sources */,
 				34B8E47D206E2C770010ADDE /* RestaurantMenuCell.swift in Sources */,
 				34ADA75F206D7CCC00C31D37 /* HomeViewController.swift in Sources */,
+				343F37F7207B4E2200DCBE40 /* BaseRestaurantDetailViewController.swift in Sources */,
 				34D521AC207375BC00528852 /* EditRestaurantItemsViewController.swift in Sources */,
 				34BAB225206FF7F200E39E8B /* MapViewController.swift in Sources */,
 				34BAB22D207189BA00E39E8B /* User.swift in Sources */,

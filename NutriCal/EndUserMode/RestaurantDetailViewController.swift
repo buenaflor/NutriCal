@@ -19,22 +19,12 @@ class RestaurantDetailViewController: BaseImagePickerViewController {
             
             guard let restaurantIdentifier = restaurantIdentifier else { return }
             guard let imgURL = URL(string: restaurantIdentifier.restaurant.imageFilePath) else { return }
-
-            self.firebaseManager.fetchMenu(restaurantIdentifier: restaurantIdentifier, completion: { (internalMenu, hasMenu) in
-  
-                if hasMenu {
-                    guard let internalMenu = internalMenu else { return }
-                    print(internalMenu)
-                    self.menus.append(internalMenu)
-                    self.setupCountLabelText(for: self.menuCountLabel, count: self.menus.count, searchString: "Menus")
-                    self.tableView.reloadData()
-                    SwiftSpinner.hide()
-                    print("wasch los?")
-                }
-                else {
-                    print("wasch los? kein menu?")
-                    SwiftSpinner.hide()
-                }
+            self.firebaseManager.fetchMenu(restaurantIdentifier: restaurantIdentifier, completion: { (menu) in
+                
+                self.menus = menu
+                self.setupCountLabelText(for: self.menuCountLabel, count: self.menus.count, searchString: "Menus")
+                self.tableView.reloadData()
+                SwiftSpinner.hide()
             })
             
             self.imagePickerButton.sd_setImage(with: imgURL, for: .normal)
@@ -125,7 +115,7 @@ class RestaurantDetailViewController: BaseImagePickerViewController {
         return tableView
     }()
     
-    private var menus = [InternalMenu]()
+    private var menus = [Menu]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -286,7 +276,7 @@ class RestaurantDetailViewController: BaseImagePickerViewController {
 
 extension RestaurantDetailViewController: AddRestaurantMenuViewControllerDelegate {
     
-    func addRestaurantMenuViewController(_ addRestaurantMenuViewController: AddRestaurantMenuViewController, didReceive menu: InternalMenu) {
+    func addRestaurantMenuViewController(_ addRestaurantMenuViewController: AddRestaurantMenuViewController, didReceive menu: Menu) {
         self.menus.append(menu)
         self.tableView.reloadData()
     }
@@ -301,7 +291,7 @@ extension RestaurantDetailViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(UITableViewCell.self, forIndexPath: indexPath)
         
-        cell.textLabel?.text = menus[indexPath.row].menu.title
+        cell.textLabel?.text = menus[indexPath.row].title
         
         return cell
     }

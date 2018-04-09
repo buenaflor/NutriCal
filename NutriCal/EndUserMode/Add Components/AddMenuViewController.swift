@@ -11,7 +11,7 @@ import UIKit
 import RangeSeekSlider
 
 protocol AddRestaurantMenuViewControllerDelegate: class {
-    func addRestaurantMenuViewController(_ addRestaurantMenuViewController: AddRestaurantMenuViewController, didReceive menu: InternalMenu)
+    func addRestaurantMenuViewController(_ addRestaurantMenuViewController: AddRestaurantMenuViewController, didReceive menu: Menu)
 }
 
 class AddRestaurantMenuViewController: UIViewController {
@@ -163,7 +163,7 @@ class AddRestaurantMenuViewController: UIViewController {
 //        let menu = Menu(title: "Italian", lowerPriceRange: 3.9, higherPiceRange: 8.0)
 //        let internalMenu = InternalMenu(menu: menu, foods: foods)
         
-        self.delegate?.addRestaurantMenuViewController(self, didReceive: internalMenu)
+        self.delegate?.addRestaurantMenuViewController(self, didReceive: internalMenu.menu)
 //        self.firebaseManager.uploadFoodImages(internalMenu: internalMenu) { (menu) in
 //            print("")
 //        }

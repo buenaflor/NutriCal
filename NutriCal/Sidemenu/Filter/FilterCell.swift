@@ -22,19 +22,33 @@ class FilterCell: UITableViewCell {
             
             switch filterOption {
             case FilterOption.carbs:
-                print("")
+                self.lowerFilterLabel.text = "0 Carbs"
+                self.higherFilterLabel.text = "400 Carbs"
+                self.setSliderValues(min: 0, max: 400)
             case FilterOption.protein:
-                print("")
+                self.lowerFilterLabel.text = "0 Protein"
+                self.higherFilterLabel.text = "100 Carbs"
+                self.setSliderValues(min: 0, max: 100)
             case FilterOption.price:
-                print("")
+                self.lowerFilterLabel.text = "0€"
+                self.higherFilterLabel.text = "30€"
+                self.setSliderValues(min: 0, max: 30)
             case FilterOption.kCal:
-                print("")
+                self.lowerFilterLabel.text = "0 kCal"
+                self.higherFilterLabel.text = "1000 kCal"
+                self.setSliderValues(min: 0, max: 1000)
             case FilterOption.location:
-                print("")
+                self.lowerFilterLabel.text = "Within 0km"
+                self.higherFilterLabel.text = "Within 2km"
+                self.setSliderValues(min: 0, max: 2)
             case FilterOption.rating:
-                print("")
+                self.lowerFilterLabel.text = "0 Stars"
+                self.higherFilterLabel.text = "5 Stars"
+                self.setSliderValues(min: 0, max: 0.5)
             case FilterOption.fats:
-                print("")
+                self.lowerFilterLabel.text = "0 Fats"
+                self.higherFilterLabel.text = "100 Fats"
+                self.setSliderValues(min: 0, max: 100)
             case FilterOption.cuisine:
                 print("")
             }
@@ -86,6 +100,11 @@ class FilterCell: UITableViewCell {
             v.bottomAnchor.constraint(equalTo: volumeSlider.topAnchor),
             v.trailingAnchor.constraint(equalTo: p.trailingAnchor, constant: -30)
             ]}
+    }
+    
+    private func setSliderValues(min: Float, max: Float) {
+        self.volumeSlider.minimumValue = min
+        self.volumeSlider.maximumValue = max
     }
     
     required init?(coder aDecoder: NSCoder) {

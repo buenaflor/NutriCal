@@ -16,17 +16,26 @@ class RestaurantMenuCell: UICollectionViewCell {
     
     var dataSource: Any? {
         didSet {
-            guard let internalRestaurant = dataSource as? InternalRestaurant else { return }
+            guard let restaurantIdentifier = dataSource as? RestaurantIdentifier else { return }
+            self.restaurantView.dataSource = restaurantIdentifier
             
-            if internalRestaurant.internalMenu.count != 0 {
-                print(internalRestaurant.internalMenu[0])
+            let firebaseManager = FirebaseManager()
+            firebaseManager.fetchMenu(restaurantIdentifier: restaurantIdentifier) { (menus) in
+                self.menus = menus
+                
+                self.menus.forEach { (menu) in
+                    firebaseManager.fetchFood(restaurantIdentifier: restaurantIdentifier, menu: menu, completion: { (internalMenu) in
+                        self.internalMenus.append(internalMenu)
+                        self.collectionView.reloadData()
+                    })
+                }
             }
-            
-            restaurantView.dataSource = internalRestaurant.restaurant
         }
     }
     
+    private var internalMenus = [InternalMenu]()
     
+    private var menus = [Menu]()
     
     weak var delegate: RestaurantMenuCellDelegate?
     
@@ -39,6 +48,14 @@ class RestaurantMenuCell: UICollectionViewCell {
         collectionView.register(RestaurantMenuGalleryCell.self)
         collectionView.backgroundColor = .white
         return collectionView
+    }()
+    
+    private let recommendedLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: "Avenir", size: 20)
+        label.text = "Recommended Menu"
+        label.numberOfLines = 1
+        return label
     }()
     
     private let restaurantView = RestaurantView()
@@ -63,9 +80,13 @@ class RestaurantMenuCell: UICollectionViewCell {
             v.heightAnchor.constraint(equalTo: p.heightAnchor, multiplier: 0.4)
             ]}
         
+        self.add(subview: recommendedLabel) { (v, p) in [
+            v.topAnchor.constraint(equalTo: self.restaurantView.bottomAnchor, constant: 12),
+            v.leadingAnchor.constraint(equalTo: p.leadingAnchor, constant: 12)
+            ]}
         
         self.add(subview: collectionView) { (v, p) in [
-            v.topAnchor.constraint(equalTo: self.restaurantView.bottomAnchor, constant: 12),
+            v.topAnchor.constraint(equalTo: self.recommendedLabel.bottomAnchor, constant: 12),
             v.leadingAnchor.constraint(equalTo: p.leadingAnchor, constant: 12),
             v.trailingAnchor.constraint(equalTo: p.trailingAnchor, constant: -12),
             v.bottomAnchor.constraint(equalTo: p.bottomAnchor, constant: -12)
@@ -85,24 +106,25 @@ class RestaurantMenuCell: UICollectionViewCell {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    @objc func test() {
+        print("test")
+    }
 }
 
 extension RestaurantMenuCell: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        guard let internalRestaurant = self.dataSource as? InternalRestaurant else { return 0 }
-        
-        return internalRestaurant.internalMenu.count
+        guard let firstMenu = self.internalMenus.first else { return 0 }
+        return firstMenu.foods.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(RestaurantMenuGalleryCell.self, forIndexPath: indexPath)
+        guard let firstMenu = self.internalMenus.first, let firstFood = firstMenu.foods.first else { return UICollectionViewCell() }
         
-        guard let internalRestaurant = self.dataSource as? InternalRestaurant else { return UICollectionViewCell() }
-        
-        if internalRestaurant.internalMenu.count != 0 {
-            cell.dataSource = internalRestaurant.internalMenu[0].foods[indexPath.row]
-        }
+        cell.dataSource = firstMenu.foods[indexPath.row]
+        cell.firstDataSource = firstFood
             
         return cell
     }

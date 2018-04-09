@@ -274,11 +274,6 @@ extension AddRestaurantsViewController: UIImagePickerControllerDelegate, UINavig
             data.write(toFile: localPath!, atomically: true)
             
             imageFilePath = localPath
-            let firebaseManager = FirebaseManager()
-            firebaseManager.upload(file: localPath!, completion: { (downloadURL) in
-                print("Success bro")
-                print(downloadURL)
-            })
         }
         
         dismiss(animated: true, completion: nil)

@@ -77,7 +77,6 @@ extension SignUpEndUserViewController: LoginBaseViewControllerDelegate {
                         alertController.addAction(defaultAction)
                         
                         self.present(alertController, animated: true, completion: nil)
-                        
                     }
                     else {
                         let alertController = UIAlertController(title: "Error", message: error?.localizedDescription, preferredStyle: .alert)

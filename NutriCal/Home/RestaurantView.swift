@@ -22,6 +22,7 @@ class RestaurantView: UIView {
             self.restaurantNameLabel.text = restaurant.restaurant.name
             self.restaurantCuisineLabel.text = restaurant.restaurant.cuisine
             self.restaurantImageView.image = #imageLiteral(resourceName: "restaurant-logo2")
+            self.priceIndicatorLabel.text = "€€"
 //            self.restaurantImageView.sd_setImage(with: imgURL)
         }
     }
@@ -29,6 +30,13 @@ class RestaurantView: UIView {
     private let restaurantNameLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "Avenir-Black", size: 23)
+        label.numberOfLines = 1
+        return label
+    }()
+    
+    private let priceIndicatorLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: "Avenir", size: 19)
         label.numberOfLines = 1
         return label
     }()
@@ -105,6 +113,11 @@ class RestaurantView: UIView {
         self.add(subview: restaurantCuisineLabel) { (v, p) in [
             v.topAnchor.constraint(equalTo: cosmosView.bottomAnchor, constant: 15),
             v.leadingAnchor.constraint(equalTo: leftContainerView.trailingAnchor, constant: 20)
+            ]}
+        
+        self.add(subview: priceIndicatorLabel) { (v, p) in [
+            v.trailingAnchor.constraint(equalTo: p.trailingAnchor, constant: -20),
+            v.topAnchor.constraint(equalTo: cosmosView.bottomAnchor, constant: 15)
             ]}
         
         let separatorView = UIView()
