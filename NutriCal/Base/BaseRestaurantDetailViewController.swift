@@ -28,8 +28,17 @@ class BaseRestaurantDetailViewController: BaseImagePickerViewController {
             
             guard let restaurantIdentifier = restaurantIdentifier else { return }
             guard let imgURL = URL(string: restaurantIdentifier.restaurant.imageFilePath) else { return }
+            
+            self.firebaseManager.calculateAverageRating(from: restaurantIdentifier) { (rating) in
+                self.cosmosView.rating = Double(rating)
+            }
+            
+            self.firebaseManager.fetchReviews(from: restaurantIdentifier) { (reviews) in
+                self.setupCountLabelText(for: self.reviewsCountLabel, count: reviews.count, searchString: "Reviews")
+                self.cosmosView.text = "\((reviews.count))"
+            }
+            
             self.firebaseManager.fetchMenu(restaurantIdentifier: restaurantIdentifier, completion: { (menu) in
-                
                 self.menus = menu
                 self.setupCountLabelText(for: self.menuCountLabel, count: self.menus.count, searchString: "Menus")
                 self.delegate?.baseRestaurantDetailViewController(self, didSet: restaurantIdentifier, menus: self.menus)
@@ -37,7 +46,6 @@ class BaseRestaurantDetailViewController: BaseImagePickerViewController {
             })
             
             self.imagePickerButton.sd_setImage(with: imgURL, for: .normal)
-            self.setupCountLabelText(for: reviewsCountLabel, count: 0, searchString: "Reviews")
             self.setupCountLabelText(for: menuCountLabel, count: self.menus.count, searchString: "Menus")
             
             self.nameLabel.text = restaurantIdentifier.restaurant.name
@@ -45,6 +53,7 @@ class BaseRestaurantDetailViewController: BaseImagePickerViewController {
             let street = restaurantIdentifier.restaurant.street
             let postalCode = restaurantIdentifier.restaurant.postalCode
             let city = restaurantIdentifier.restaurant.city
+        
             self.addressLabel.text = "\(street), \(postalCode) \(city)"
         }
     }
@@ -87,8 +96,6 @@ class BaseRestaurantDetailViewController: BaseImagePickerViewController {
     
     private let cosmosView: CosmosView = {
         let view = CosmosView()
-        view.rating = 1
-        view.text = "(Avg: 4.3 - 32 Ratings)"
         view.settings.starSize = 30
         view.settings.textFont = UIFont(name: "Avenir", size: 16)!
         view.isUserInteractionEnabled = false
@@ -127,7 +134,8 @@ class BaseRestaurantDetailViewController: BaseImagePickerViewController {
         
         self.view.add(subview: cosmosView) { (v, p) in [
             v.topAnchor.constraint(equalTo: menuCountLabel.bottomAnchor, constant: 15),
-            v.trailingAnchor.constraint(equalTo: p.trailingAnchor, constant: -20)
+            v.leadingAnchor.constraint(equalTo: imagePickerButton.trailingAnchor, constant: 20),
+            v.trailingAnchor.constraint(equalTo: p.trailingAnchor, constant: 20)
             ]}
         
         self.view.add(subview: nameLabel) { (v, p) in [

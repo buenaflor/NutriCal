@@ -27,6 +27,8 @@ final class Annotation: NSObject, MKAnnotation {
     }
     
     var region: MKCoordinateRegion {
+
+        // Default
         let span = MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
         return MKCoordinateRegion(center: coordinate, span: span)
     }
@@ -43,7 +45,7 @@ class MapViewController: UIViewController {
         mapView.showsUserLocation = true
         return mapView
     }()
-    
+
     private let currentLocationButton: UIButton = {
         let button = UIButton()
         button.setImage(#imageLiteral(resourceName: "current-location").withRenderingMode(.alwaysTemplate), for: .normal)
@@ -58,6 +60,8 @@ class MapViewController: UIViewController {
         self.setupView()
         self.determineMyCurrentLocation()
 //        self.fetchAnnotationData()
+        
+        
     }
     
     override func viewWillLayoutSubviews() {
@@ -93,7 +97,7 @@ class MapViewController: UIViewController {
                     print("latitude: \(location.coordinate.latitude), longitude: \(location.coordinate.longitude)")
                     let coordinate = CLLocationCoordinate2D(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
                     let annotation = Annotation(coordinate: coordinate, title: name, subtitle: "Burger & Drinks")
-
+                    
                     self.mapView.addAnnotation(annotation)
                 }
                 
@@ -105,6 +109,9 @@ class MapViewController: UIViewController {
     
     private func setupView() {
         self.view.backgroundColor = .white
+        
+        let distanceRightButtonItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(distanceRightButtonItemTapped))
+        self.navigationItem.rightBarButtonItem = distanceRightButtonItem
         
         self.configureConstraints()
     }
@@ -149,6 +156,10 @@ class MapViewController: UIViewController {
     @objc private func currentLocationButtonTapped() {
         self.locationManager.startUpdatingLocation()
     }
+    
+    @objc private func distanceRightButtonItemTapped() {
+        
+    }
 }
 
 extension MapViewController: CLLocationManagerDelegate {
@@ -161,9 +172,10 @@ extension MapViewController: CLLocationManagerDelegate {
         // manager.stopUpdatingLocation()
         
         let coordinate = CLLocationCoordinate2D(latitude: userLocation.coordinate.latitude, longitude: userLocation.coordinate.longitude)
-        
+        let region = MKCoordinateRegionMakeWithDistance(coordinate, 1000, 1000)
         let currentLocationAnnotation = Annotation(coordinate: coordinate, title: "Current Location", subtitle: "Location")
-        mapView.setRegion(currentLocationAnnotation.region, animated: true)
+
+        mapView.setRegion(region, animated: true)
         
         manager.stopUpdatingLocation()
     }
@@ -172,10 +184,15 @@ extension MapViewController: CLLocationManagerDelegate {
     {
         print("Error \(error)")
     }
+
 }
 
 extension MapViewController: MKMapViewDelegate {
-
+    
+    func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+        print("Radius:", mapView.currentRadius())
+    }
+    
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
 //        let foodDetailViewController = FoodDetailViewController()
 //        navigationController?.pushViewController(foodDetailViewController, animated: true)
@@ -195,3 +212,20 @@ extension MapViewController: MKMapViewDelegate {
         }
     }
 }
+
+extension MKMapView {
+    
+    func topCenterCoordinate() -> CLLocationCoordinate2D {
+        return self.convert(CGPoint(x: self.frame.size.width / 2.0, y: 0), toCoordinateFrom: self)
+    }
+    
+    func currentRadius() -> Double {
+        let centerLocation = CLLocation(latitude: self.centerCoordinate.latitude, longitude: self.centerCoordinate.longitude)
+        let topCenterCoordinate = self.topCenterCoordinate()
+        let topCenterLocation = CLLocation(latitude: topCenterCoordinate.latitude, longitude: topCenterCoordinate.longitude)
+        return centerLocation.distance(from: topCenterLocation)
+    }
+    
+}
+
+

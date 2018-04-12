@@ -129,7 +129,7 @@ extension RestaurantOwnerDetailViewController: BaseRestaurantDetailViewControlle
 extension RestaurantOwnerDetailViewController: AddRestaurantMenuViewControllerDelegate {
     
     func addRestaurantMenuViewController(_ addRestaurantMenuViewController: AddRestaurantMenuViewController, didReceive menu: Menu) {
-        
+        self.menus.append(menu)
         self.tableView.reloadData()
     }
 }

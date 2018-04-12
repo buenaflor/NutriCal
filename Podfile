@@ -17,6 +17,7 @@ target 'NutriCal' do
   pod 'RangeSeekSlider'
   pod 'AMPopTip'
   pod 'Cosmos', '~> 15.0'
+  pod 'KUIPopOver'
 
   target 'NutriCalTests' do
     inherit! :search_paths

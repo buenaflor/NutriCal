@@ -8,8 +8,10 @@
 
 import UIKit
 
+import SwiftSpinner
+
 protocol AddMenuFoodViewControllerDelegate: class {
-    func addMenuFoodViewController(_ addMenuFoodViewControllerDelegate: AddMenuFoodViewController, didReceive food: Food, image: UIImage)
+    func addMenuFoodViewController(_ addMenuFoodViewControllerDelegate: AddMenuFoodViewController, didReceive food: Food)
 }
 
 class AddMenuFoodViewController: BaseImagePickerViewController {
@@ -184,14 +186,25 @@ class AddMenuFoodViewController: BaseImagePickerViewController {
             let price = Double(priceTextField.text!),
             let description = descriptionTextField.text,
             let name = titleTextField.text,
-            let imageFilePath = self.imageFilePath,
-            let image = imagePickerButton.imageView?.image
-            else { return }
+            let imageFilePath = self.imageFilePath
+            else {
+                let alertController = UIAlertController(title: "Error", message: "Something went wrong", preferredStyle: .alert)
+                alertController.addAction(UIAlertAction(title: "Done", style: .default, handler: nil))
+                self.present(alertController, animated: true, completion: nil)
+                return
+        }
         
-        let food = Food(name: name, description: description, isVegan: true, ingredients: self.ingredients, kCal: kCal, price: price, imageLink: imageFilePath)
-        self.delegate?.addMenuFoodViewController(self, didReceive: food, image: image)
-        self.navigationController?.popViewController(animated: true)
+        SwiftSpinner.show("Uploading Food")
         
+        let firebaseManager = FirebaseManager()
+        
+        firebaseManager.upload(file: imageFilePath) { (downloadURL) in
+            let food = Food(name: name, description: description, isVegan: true, ingredients: self.ingredients, kCal: kCal, price: price, imageLink: downloadURL)
+            self.delegate?.addMenuFoodViewController(self, didReceive: food)
+            self.navigationController?.popViewController(animated: true)
+            
+            SwiftSpinner.hide()
+        }
     }
     
     @objc private func imagePickerButtonTapped() {

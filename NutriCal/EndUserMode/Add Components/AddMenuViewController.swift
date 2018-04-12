@@ -189,7 +189,7 @@ extension AddRestaurantMenuViewController: UITableViewDataSource {
 }
 
 extension AddRestaurantMenuViewController: AddMenuFoodViewControllerDelegate {
-    func addMenuFoodViewController(_ addMenuFoodViewControllerDelegate: AddMenuFoodViewController, didReceive food: Food, image: UIImage) {
+    func addMenuFoodViewController(_ addMenuFoodViewControllerDelegate: AddMenuFoodViewController, didReceive food: Food) {
         self.foods.append(food)
         self.tableView.reloadData()
     }

@@ -45,6 +45,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         UITabBar.appearance().tintColor = .white
         UITabBar.appearance().barTintColor = UIColor.StandardMode.TabBarColor
+        
+        UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).defaultTextAttributes = [NSAttributedStringKey.foregroundColor.rawValue: UIColor.white]
     }
 }
 

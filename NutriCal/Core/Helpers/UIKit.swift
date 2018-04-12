@@ -142,19 +142,20 @@ extension UIView {
         let view = UIView()
         view.backgroundColor = color
         
-        self.add(subview: view) { (view, parent) in [
-            view.heightAnchor.constraint(equalToConstant: 0.5),
-            view.leadingAnchor.constraint(equalTo: self.leadingAnchor),
-            view.trailingAnchor.constraint(equalTo: self.trailingAnchor),
-            view.topAnchor.constraint(equalTo: self.bottomAnchor)
-            ]}
-        
-//        parent.add(subview: view) { (v, p) in [
-//            v.heightAnchor.constraint(equalToConstant: 0.5),
-//            v.leadingAnchor.constraint(equalTo: self.leadingAnchor),
-//            v.trailingAnchor.constraint(equalTo: self.trailingAnchor),
-//            v.topAnchor.constraint(equalTo: self.bottomAnchor)
+//        self.add(subview: view) { (view, parent) in [
+//            view.heightAnchor.constraint(equalToConstant: 0.5),
+//            view.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+//            view.trailingAnchor.constraint(equalTo: self.trailingAnchor),
+//            view.topAnchor.constraint(equalTo: self.bottomAnchor)
 //            ]}
+        
+        self.add(subview: view) { (v, p) in [
+            v.topAnchor.constraint(equalTo: p.bottomAnchor, constant: 20),
+            v.leadingAnchor.constraint(equalTo: p.leadingAnchor),
+            v.trailingAnchor.constraint(equalTo: p.trailingAnchor),
+            v.heightAnchor.constraint(equalToConstant: 0.5)
+            ]}
+    
     }
 }
 

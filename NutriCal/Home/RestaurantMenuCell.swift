@@ -8,6 +8,8 @@
 
 import UIKit
 
+import SwiftSpinner
+
 protocol RestaurantMenuCellDelegate: class {
     func pushViewController(_ viewController: UIViewController)
 }
@@ -17,6 +19,7 @@ class RestaurantMenuCell: UICollectionViewCell {
     var dataSource: Any? {
         didSet {
             guard let restaurantIdentifier = dataSource as? RestaurantIdentifier else { return }
+            
             self.restaurantView.dataSource = restaurantIdentifier
             
             let firebaseManager = FirebaseManager()
@@ -138,7 +141,12 @@ extension RestaurantMenuCell: UICollectionViewDelegateFlowLayout {
 
 extension RestaurantMenuCell: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let firstMenu = self.internalMenus.first else { return }
+        
         let foodDetailViewController = FoodDetailViewController()
+        foodDetailViewController.food = firstMenu.foods[indexPath.row]
+        SwiftSpinner.show("Loading \(firstMenu.foods[indexPath.row].name)")
+        
         self.delegate?.pushViewController(foodDetailViewController)
     }
 }

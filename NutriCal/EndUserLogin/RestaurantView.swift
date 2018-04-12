@@ -12,6 +12,8 @@ import Cosmos
 
 class RestaurantView: UIView {
     
+    let firebaseManager = FirebaseManager()
+    
     var dataSource: Any? {
         didSet {
             guard
@@ -23,6 +25,14 @@ class RestaurantView: UIView {
             self.restaurantCuisineLabel.text = restaurant.restaurant.cuisine
             self.restaurantImageView.image = #imageLiteral(resourceName: "restaurant-logo2")
             self.priceIndicatorLabel.text = "€€"
+            
+            self.firebaseManager.calculateAverageRating(from: restaurant) { (rating) in
+                self.cosmosView.rating = Double(rating)
+            }
+            self.firebaseManager.fetchReviews(from: restaurant) { (reviews) in
+                self.cosmosView.text = "\((reviews.count))"
+            }
+            
 //            self.restaurantImageView.sd_setImage(with: imgURL)
         }
     }
@@ -43,8 +53,6 @@ class RestaurantView: UIView {
     
     private let cosmosView: CosmosView = {
         let view = CosmosView()
-        view.rating = 1
-        view.text = "(32)"
         view.settings.starSize = 30
         view.settings.textFont = UIFont(name: "Avenir", size: 16)!
         view.isUserInteractionEnabled = false

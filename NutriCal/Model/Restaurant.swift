@@ -72,6 +72,7 @@ struct Food {
         return [
             "name": name,
             "isVegan": isVegan,
+            "description": description,
             "ingredients": ingredients,
             "kCal": kCal,
             "price": price,

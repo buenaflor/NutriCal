@@ -172,12 +172,10 @@ class FirebaseManager {
         
         batch.setData(internalMenu.menu.dictionary, forDocument: menuDoc)
         
-        self.uploadFoodImages(internalMenu: internalMenu) { (menu) in
-            menu.foods.forEach({ (food) in
-                let foodDoc = menuDoc.collection("food").document(food.name)
-                batch.setData(food.dictionary, forDocument: foodDoc)
-            })
-        }
+        internalMenu.foods.forEach({ (food) in
+            let foodDoc = menuDoc.collection("food").document(food.name)
+            batch.setData(food.dictionary, forDocument: foodDoc)
+        })
         
         batch.commit() { err in
             if let err = err {
@@ -189,7 +187,7 @@ class FirebaseManager {
         }
     }
     
-    private func upload(file path: String, completion: @escaping (_ imageURL: String) -> Void) {
+    func upload(file path: String, completion: @escaping (_ imageURL: String) -> Void) {
         let path = URL(fileURLWithPath: path)
         
         let storageRef = storage.reference()
@@ -203,6 +201,98 @@ class FirebaseManager {
         uploadTaskTest.observe(.success) { (snapshot) in
             guard let imageUrl = snapshot.metadata?.downloadURL() else { return }
             completion(imageUrl.absoluteString)
+        }
+    }
+    
+    func uploadReviewDummyData(restaurantIdentifier: RestaurantIdentifier, completion: @escaping () -> Void) {
+        let batch = db.batch()
+        
+        let reviewDoc = db.collection("restaurantOwner").document((Auth.auth().currentUser?.uid)!)
+            .collection("restaurants").document(restaurantIdentifier.documentIdentifier)
+            .collection("reviews").document()
+        
+        for index in 1..<30 {
+            let rand  = arc4random_uniform(5)
+            
+            if rand != 0 {
+                let review = Review(username: "Dummy", rating: Int(rand), comment: "Dummy Comment", date: "Dummy Date")
+                batch.setData(review.dictionary, forDocument: reviewDoc)
+            }
+        }
+        
+        batch.commit() { err in
+            if let err = err {
+                print("Error writing batch \(err)")
+            } else {
+                print("Batch write 'dummyData' to 'restaurant' succeeded.")
+                completion()
+            }
+        }
+    }
+    
+    func upload(review: Review, restaurantIdentifier: RestaurantIdentifier, completion: @escaping () -> Void) {
+        let batch = db.batch()
+        
+        let reviewDoc = db.collection("restaurantOwner").document((Auth.auth().currentUser?.uid)!)
+            .collection("restaurants").document(restaurantIdentifier.documentIdentifier)
+            .collection("reviews").document()
+        
+        batch.setData(review.dictionary, forDocument: reviewDoc)
+        batch.commit() { err in
+            if let err = err {
+                print("Error writing batch \(err)")
+            } else {
+                print("Batch write 'review' to 'restaurant' succeeded.")
+                completion()
+            }
+        }
+    }
+    
+    func fetchReviews(from restaurantIdentifier: RestaurantIdentifier, completion: @escaping (([Review]) -> Void)) {
+        
+        let ref = db.collection("restaurantOwner").document((Auth.auth().currentUser?.uid)!)
+            .collection("restaurants").document(restaurantIdentifier.documentIdentifier)
+            .collection("reviews")
+        
+        ref.getDocuments { (querySnapshot, err) in
+            if let err = err {
+                print("Error writing batch \(err)")
+            } else {
+                if let reviews = querySnapshot?.documents.flatMap({
+                    $0.data().flatMap({ (data) in
+                        return Review(dictionary: data)
+                    })
+                }) {
+
+                    completion(reviews)
+                }
+            }
+        }
+    }
+    
+    func calculateAverageRating(from restaurantIdentifier: RestaurantIdentifier, completion: @escaping ((Int) -> Void)) {
+        let ref = db.collection("restaurantOwner").document((Auth.auth().currentUser?.uid)!)
+            .collection("restaurants").document(restaurantIdentifier.documentIdentifier)
+            .collection("reviews")
+        
+        var totalRating = 0
+        
+        ref.getDocuments { (querySnapshot, err) in
+            if let err = err {
+                print("Error writing batch \(err)")
+            } else {
+                if let reviews = querySnapshot?.documents.flatMap({
+                    $0.data().flatMap({ (data) in
+                        return Review(dictionary: data)
+                    })
+                }) {
+                    reviews.forEach({
+                        totalRating = totalRating + $0.rating
+                    })
+                    
+                    completion(totalRating / reviews.count)
+                }
+            }
         }
     }
     

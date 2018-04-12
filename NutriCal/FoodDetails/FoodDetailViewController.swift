@@ -8,17 +8,24 @@
 
 import UIKit
 
+import SDWebImage
+import SwiftSpinner
+
 class FoodDetailViewController: UIViewController {
     
-    // Navigation Bar, search for specific food
+    var food: Food? {
+        didSet {
+            guard let food = food, let imageURL = URL(string: food.imageLink) else { return }
+            self.foodImageView.sd_setImage(with: imageURL)
+           
+            SwiftSpinner.hide()
+        }
+    }
     
-    private lazy var searchController: UISearchController = {
-        let searchController = UISearchController(searchResultsController: nil)
-        searchController.searchBar.delegate = self
-        searchController.searchBar.tintColor = .white
-        searchController.dimsBackgroundDuringPresentation = false
-        searchController.hidesNavigationBarDuringPresentation = false
-        return searchController
+    private let foodImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFill
+        return imageView
     }()
     
     override func viewDidLoad() {
@@ -30,11 +37,17 @@ class FoodDetailViewController: UIViewController {
     private func setupView() {
         self.view.backgroundColor = .white
         
-        self.navigationItem.searchController = searchController
+        self.configureConstraints()
     }
     
     private func configureConstraints() {
         
+        self.view.add(subview: foodImageView) { (v, p) in [
+            v.topAnchor.constraint(equalTo: p.safeAreaLayoutGuide.topAnchor),
+            v.leadingAnchor.constraint(equalTo: p.leadingAnchor),
+            v.trailingAnchor.constraint(equalTo: p.trailingAnchor),
+            v.heightAnchor.constraint(equalTo: p.heightAnchor, multiplier: 0.3)
+            ]}
     }
 }
 

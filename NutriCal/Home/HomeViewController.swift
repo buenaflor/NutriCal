@@ -46,15 +46,10 @@ class HomeViewController: UIViewController {
             self.restaurantIdentifiers = restaurantIdentifiers
         
             self.collectionView.reloadData()
+            print("reloaded")
         }
         
         self.setupView()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        print("appeared")
     }
     
     private func createSideMenu() {
@@ -84,6 +79,7 @@ class HomeViewController: UIViewController {
     
     private func configureConstraints() {
     
+
         self.view.add(subview: self.collectionView) { (v, p) in [
             v.topAnchor.constraint(equalTo: p.safeAreaLayoutGuide.topAnchor),
             v.leadingAnchor.constraint(equalTo: p.safeAreaLayoutGuide.leadingAnchor),
@@ -101,7 +97,6 @@ extension HomeViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionHeader, withReuseIdentifier: "id", for: indexPath)
-        
         return headerView
     }
     

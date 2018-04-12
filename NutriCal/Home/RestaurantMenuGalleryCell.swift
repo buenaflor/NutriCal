@@ -25,7 +25,11 @@ class RestaurantMenuGalleryCell: UICollectionViewCell {
     
     var dataSource: Any? {
         didSet {
-            guard let food = dataSource as? Food else { return }
+            print("got into menugallery")
+            guard let food = dataSource as? Food else {
+                print("error")
+                return
+            }
 
             self.foodNameLabel.text = food.name
             self.priceLabel.text = "\(food.price) €"

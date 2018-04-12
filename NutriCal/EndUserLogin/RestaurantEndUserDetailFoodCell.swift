@@ -8,9 +8,14 @@
 
 import UIKit
 
-import AMPopTip
+class CustomButton: UIButton {
+    var row = Int()
+    var section = Int()
+}
 
-class RestaurantEnduserDetailFoodCell: UITableViewCell {
+class RestaurantEndUserDetailFoodCell: UITableViewCell {
+    
+    var restaurantEndUserDetailViewController = RestaurantEndUserDetailViewController()
     
     var dataSource: Any? {
         didSet {
@@ -45,9 +50,9 @@ class RestaurantEnduserDetailFoodCell: UITableViewCell {
         return label
     }()
     
-    private let priceButton: UIButton = {
-        let button = UIButton()
-        button.addTarget(self, action: #selector(priceButtonTapped), for: .touchUpInside)
+    lazy var priceButton: CustomButton = {
+        let button = CustomButton()
+        button.addTarget(restaurantEndUserDetailViewController, action: #selector(restaurantEndUserDetailViewController.priceButtonTapped(sender:)), for: .touchUpInside)
         button.backgroundColor = .red
         button.layer.masksToBounds = false
         button.layer.cornerRadius = 3
@@ -104,12 +109,6 @@ class RestaurantEnduserDetailFoodCell: UITableViewCell {
             v.trailingAnchor.constraint(equalTo: p.trailingAnchor),
             v.heightAnchor.constraint(equalToConstant: 0.6)
             ]}
-    }
-    
-    @objc private func priceButtonTapped() {
-        print("ay")
-//        let popTip = PopTip()
-//        popTip.show(text: "whats up", direction: .up, maxWidth: 200, in: self, from: self.frame)
     }
     
     required init?(coder aDecoder: NSCoder) {
