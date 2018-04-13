@@ -38,6 +38,11 @@ class MapViewController: UIViewController {
     
     private var locationManager: CLLocationManager!
     
+    private var restaurants = [RestaurantIdentifier]()
+    private var filteredRestaurants = [RestaurantIdentifier]()
+    
+    private var isSearching = false
+    
     private lazy var mapView: MKMapView = {
         let mapView = MKMapView()
         mapView.register(MKMarkerAnnotationView.self, forAnnotationViewWithReuseIdentifier: "id")
@@ -54,19 +59,38 @@ class MapViewController: UIViewController {
         return button
     }()
     
+    private lazy var searchController: UISearchController = {
+        let searchController = UISearchController(searchResultsController: nil)
+        searchController.searchBar.delegate = self
+        searchController.searchBar.placeholder = "Location"
+        searchController.dimsBackgroundDuringPresentation = false
+        searchController.hidesNavigationBarDuringPresentation = false
+        return searchController
+    }()
+    
+    private lazy var tableView: UITableView = {
+        let tableView = UITableView()
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.register(ManageRestaurantCell.self)
+        return tableView
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.setupView()
         self.determineMyCurrentLocation()
-//        self.fetchAnnotationData()
-        
-        
+        self.fetchRestaurants()
+        self.addAnnotations()
     }
     
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-        self.addAnnotations()
+    private func fetchRestaurants() {
+        let firebaseManager = FirebaseManager()
+        
+        firebaseManager.fetchEndUserRestaurant { (restaurants) in
+            self.restaurants = restaurants
+        }
     }
     
     private func addAnnotations() {
@@ -74,8 +98,8 @@ class MapViewController: UIViewController {
         let firebaseManager = FirebaseManager()
         
         SwiftSpinner.show("Fetching Map Data")
-        
-        firebaseManager.fetchRestaurant { (restaurantIdentifiers) in
+ 
+        firebaseManager.fetchEndUserRestaurant { (restaurantIdentifiers) in
             restaurantIdentifiers.forEach({ (restaurantIdentifier) in
                 
                 let name = restaurantIdentifier.restaurant.name
@@ -83,28 +107,40 @@ class MapViewController: UIViewController {
                 let postalCode = restaurantIdentifier.restaurant.postalCode
                 let city = restaurantIdentifier.restaurant.city
                 let address = "\(street), \(postalCode) \(city)"
-
-                let geoCoder = CLGeocoder()
-                geoCoder.geocodeAddressString(address) { (placemarks, error) in
-                    guard
-                        let placemarks = placemarks,
-                        let location = placemarks.first?.location
-                        else {
-                            print("not location found")
-                            return
-                    }
-
-                    print("latitude: \(location.coordinate.latitude), longitude: \(location.coordinate.longitude)")
-                    let coordinate = CLLocationCoordinate2D(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
+                
+                self.geoCodeLocation(address: address) { (coordinate) in
+                    
                     let annotation = Annotation(coordinate: coordinate, title: name, subtitle: "Burger & Drinks")
                     
-                    self.mapView.addAnnotation(annotation)
-                }
+                    if MKMapRectContainsPoint(self.mapView.visibleMapRect, MKMapPointForCoordinate(coordinate)) {
                 
+                        // add annotation at initial load if it meets condition, otherwise store it in an array and load them in regionDidChange
+                        self.mapView.addAnnotation(annotation)
+                    }
+                    else {
+                        self.mapView.removeAnnotation(annotation)
+                    }
+                }
             })
+            
             SwiftSpinner.hide()
         }
-        
+    }
+    
+    private func geoCodeLocation(address: String, completion: @escaping (CLLocationCoordinate2D) -> Void) {
+        let geoCoder = CLGeocoder()
+        geoCoder.geocodeAddressString(address) { (placemarks, error) in
+            guard
+                let placemarks = placemarks,
+                let location = placemarks.first?.location
+                else {
+                    print("not location found")
+                    return
+            }
+            
+            print("latitude: \(location.coordinate.latitude), longitude: \(location.coordinate.longitude)")
+            completion(CLLocationCoordinate2D(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude))
+        }
     }
     
     private func setupView() {
@@ -112,15 +148,9 @@ class MapViewController: UIViewController {
         
         let distanceRightButtonItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(distanceRightButtonItemTapped))
         self.navigationItem.rightBarButtonItem = distanceRightButtonItem
+        self.navigationItem.searchController = self.searchController
         
         self.configureConstraints()
-    }
-    
-    private func fetchAnnotationData() {
-//        let coordinate = CLLocationCoordinate2D(latitude: 37.7955, longitude: -122.3937)
-//        let annotation = Annotation(coordinate: coordinate, title: "Ferry Building", subtitle: "San Francisco")
-//        mapView.addAnnotation(annotation)
-//        mapView.setRegion(annotation.region, animated: true)
     }
     
     private func determineMyCurrentLocation() {
@@ -191,6 +221,30 @@ extension MapViewController: MKMapViewDelegate {
     
     func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
         print("Radius:", mapView.currentRadius())
+        for restaurantIdentifier in restaurants {
+            let restaurant = restaurantIdentifier.restaurant
+            let name = restaurant.name
+            let street = restaurant.street
+            let postalCode = restaurant.postalCode
+            let city = restaurant.city
+            let address = "\(street), \(postalCode) \(city)"
+            
+            self.geoCodeLocation(address: address) { (coordinate) in
+                
+                let annotation = Annotation(coordinate: coordinate, title: name, subtitle: "Burger & Drinks")
+                
+                if MKMapRectContainsPoint(mapView.visibleMapRect, MKMapPointForCoordinate(coordinate)) {
+                    
+                    // add annotation at initial load if it meets condition, otherwise store it in an array and load them in regionDidChange
+                    self.mapView.addAnnotation(annotation)
+                    print("added")
+                }
+                else {
+                    self.mapView.removeAnnotation(annotation)
+                    print("removed")
+                }
+            }
+        }
     }
     
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
@@ -213,6 +267,79 @@ extension MapViewController: MKMapViewDelegate {
     }
 }
 
+extension MapViewController: UITableViewDataSource {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return filteredRestaurants.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(ManageRestaurantCell.self, forIndexPath: indexPath)
+        
+        cell.dataSource = self.filteredRestaurants[indexPath.row]
+        cell.statusCodeLabel.text = self.filteredRestaurants[indexPath.row].restaurant.cuisine
+        
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 130
+    }
+}
+
+extension MapViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let restaurant = self.filteredRestaurants[indexPath.row].restaurant
+        
+        let street = restaurant.street
+        let postalCode = restaurant.postalCode
+        let city = restaurant.city
+        let address = "\(street), \(postalCode) \(city)"
+        
+        self.geoCodeLocation(address: address) { (coordinate) in
+            self.mapView.isHidden = false
+            self.tableView.removeFromSuperview()
+            self.mapView.setCenter(coordinate, animated: true)
+        }
+    }
+}
+
+extension MapViewController: UISearchBarDelegate {
+    
+    private func addTableView(){
+        self.view.add(subview: tableView) { (v, p) in [
+            v.topAnchor.constraint(equalTo: p.safeAreaLayoutGuide.topAnchor),
+            v.leadingAnchor.constraint(equalTo: p.leadingAnchor),
+            v.trailingAnchor.constraint(equalTo: p.trailingAnchor),
+            v.bottomAnchor.constraint(equalTo: p.safeAreaLayoutGuide.bottomAnchor)
+            ]}
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if !searchText.isEmpty {
+            self.isSearching = true
+            self.filteredRestaurants = restaurants.filter({
+                $0.restaurant.name.lowercased().contains(searchText.lowercased())
+            })
+            self.addTableView()
+            self.mapView.isHidden = true
+            self.tableView.reloadData()
+        }
+        else {
+            self.isSearching = false
+            self.filteredRestaurants = restaurants
+            self.mapView.isHidden = false
+            self.tableView.removeFromSuperview()
+            self.tableView.reloadData()
+        }
+    }
+    
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        self.mapView.isHidden = false
+        self.tableView.removeFromSuperview()
+    }
+}
+
 extension MKMapView {
     
     func topCenterCoordinate() -> CLLocationCoordinate2D {
@@ -225,7 +352,8 @@ extension MKMapView {
         let topCenterLocation = CLLocation(latitude: topCenterCoordinate.latitude, longitude: topCenterCoordinate.longitude)
         return centerLocation.distance(from: topCenterLocation)
     }
-    
 }
+
+
 
 

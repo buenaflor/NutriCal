@@ -33,7 +33,11 @@ class FirebaseManager {
                 for document in querySnapshot!.documents {
                     if Auth.auth().currentUser?.uid == document.documentID {
                         completion(true)
+                        print("completed")
                         return
+                    }
+                    else {
+                        completion(false)
                     }
                     print("\(document.documentID) => \(document.data())")
                 }
@@ -41,90 +45,185 @@ class FirebaseManager {
         }
     }
     
-    func fetchRestaurant(completion: @escaping ([RestaurantIdentifier]) -> Void) {
-        fetchRole { (isRestaurantOwner) in
-            if !isRestaurantOwner {
-                print("Error - Access Denied: cannot fetch restaurants")
-            }
-            else {
-                let ref = self.db
-                    .collection("restaurantOwner").document((Auth.auth().currentUser?.uid)!)
-                    .collection("restaurants")
+    func fetchOwnerRestaurant(completion: @escaping ([RestaurantIdentifier]) -> Void) {
+        
+        let ref = self.db
+            .collection("restaurantOwner").document((Auth.auth().currentUser?.uid)!)
+            .collection("restaurants")
+        
+        ref.getDocuments { (querySnapshot, err) in
+            if let err = err {
+                print("Error getting documents: \(err)")
+            } else {
                 
-                ref.getDocuments { (querySnapshot, err) in
-                    if let err = err {
-                        print("Error getting documents: \(err)")
-                    } else {
-                        
-                        var restaurantIdentifiers = [RestaurantIdentifier]()
-                        var count = 0
-                        
-                        if let restaurants = querySnapshot?.documents.flatMap({
-                            $0.data().flatMap({ (data) in
-                                return Restaurant(dictionary: data)
-                            })
-                        }) {
-                            
-                            querySnapshot?.documents.forEach({ (document) in
-                                restaurantIdentifiers.append(RestaurantIdentifier(restaurant: restaurants[count], documentIdentifier: document.documentID))
-                                count = count + 1
-                            })
-                            
-                            completion(restaurantIdentifiers)
-                            
-                        } else {
-                            print("Document does not exist")
-                        }
-                    }
+                var restaurantIdentifiers = [RestaurantIdentifier]()
+                var count = 0
+                
+                if let restaurants = querySnapshot?.documents.flatMap({
+                    $0.data().flatMap({ (data) in
+                        return Restaurant(dictionary: data)
+                    })
+                }) {
+                    
+                    querySnapshot?.documents.forEach({ (document) in
+                        restaurantIdentifiers.append(RestaurantIdentifier(restaurant: restaurants[count], documentIdentifier: document.documentID))
+                        count = count + 1
+                    })
+                    
+                    completion(restaurantIdentifiers)
+                    
+                } else {
+                    print("Document does not exist")
                 }
+            }
+        }
+    }
+    
+    func fetchEndUserRestaurant(completion: @escaping ([RestaurantIdentifier]) -> Void) {
+        let ownerRef = self.db
+            .collection("restaurantOwner")
+        
+        ownerRef.getDocuments { (querySnapshot, err) in
+            if let err = err {
+                print("Error getting documents: \(err)")
+            } else {
+                querySnapshot?.documents.forEach({ (document) in
+                    let restaurantRef = ownerRef.document(document.documentID).collection("restaurants")
+                    
+                    restaurantRef.getDocuments(completion: { (querySnapshot, err) in
+                        if let err = err {
+                            print("Error getting documents: \(err)")
+                        } else {
+                            var restaurantIdentifiers = [RestaurantIdentifier]()
+                            var count = 0
+                            
+                            if let restaurants = querySnapshot?.documents.flatMap({
+                                $0.data().flatMap({ (data) in
+                                    return Restaurant(dictionary: data)
+                                })
+                            }) {
+                                querySnapshot?.documents.forEach({ (document) in
+                                    restaurantIdentifiers.append(RestaurantIdentifier(restaurant: restaurants[count], documentIdentifier: document.documentID))
+                                    count = count + 1
+                                })
+                                completion(restaurantIdentifiers)
+                            }
+                        }
+                    })
+                })
             }
         }
     }
     
     func fetchFood(restaurantIdentifier: RestaurantIdentifier, menu: Menu, completion: @escaping ((InternalMenu) -> Void)) {
+        let ownerRef = self.db
+            .collection("restaurantOwner")
         
-        let ref = self.db
-            .collection("restaurantOwner").document((Auth.auth().currentUser?.uid)!)
-            .collection("restaurants").document(restaurantIdentifier.documentIdentifier)
-            .collection("menu").document(menu.title)
-            .collection("food")
-        
-        ref.getDocuments { (querySnapshot, err) in
+        ownerRef.getDocuments { (querySnapshot, err) in
             if let err = err {
                 print("Error getting documents: \(err)")
             } else {
-                if let foods = querySnapshot?.documents.flatMap({
-                    $0.data().flatMap({ (data) in
-                        return Food(dictionary: data)
+                querySnapshot?.documents.forEach({ (document) in
+                    let restaurantRef = ownerRef.document(document.documentID)
+                        .collection("restaurants").document(restaurantIdentifier.documentIdentifier)
+                        .collection("menu").document(menu.title)
+                        .collection("food")
+                    
+                    restaurantRef.getDocuments(completion: { (querySnapshot, err) in
+                        if let err = err {
+                            print("Error getting documents: \(err)")
+                        } else {
+                            if let foods = querySnapshot?.documents.flatMap({
+                                $0.data().flatMap({ (data) in
+                                    return Food(dictionary: data)
+                                })
+                            }) {
+                                let internalMenu = InternalMenu(menu: menu, foods: foods)
+                                completion(internalMenu)
+                            }
+                        }
                     })
-                }) {
-                    let internalMenu = InternalMenu(menu: menu, foods: foods)
-                    completion(internalMenu)
-                }
+                })
             }
         }
+        
+//        let ref = self.db
+//            .collection("restaurantOwner").document((Auth.auth().currentUser?.uid)!)
+//            .collection("restaurants").document(restaurantIdentifier.documentIdentifier)
+//            .collection("menu").document(menu.title)
+//            .collection("food")
+//
+//        ref.getDocuments { (querySnapshot, err) in
+//            if let err = err {
+//                print("Error getting documents: \(err)")
+//            } else {
+//                if let foods = querySnapshot?.documents.flatMap({
+//                    $0.data().flatMap({ (data) in
+//                        return Food(dictionary: data)
+//                    })
+//                }) {
+//                    let internalMenu = InternalMenu(menu: menu, foods: foods)
+//                    completion(internalMenu)
+//                }
+//            }
+//        }
     }
     
     func fetchMenu(restaurantIdentifier: RestaurantIdentifier, completion: @escaping (([Menu]) -> Void) ) {
         
-        let ref = self.db
-            .collection("restaurantOwner").document((Auth.auth().currentUser?.uid)!)
-            .collection("restaurants").document(restaurantIdentifier.documentIdentifier)
-            .collection("menu")
+        let ownerRef = self.db
+            .collection("restaurantOwner")
         
-        ref.getDocuments { (querySnapshot, err) in
+        ownerRef.getDocuments { (querySnapshot, err) in
             if let err = err {
                 print("Error getting documents: \(err)")
             } else {
-                if let menus = querySnapshot?.documents.flatMap({
-                    $0.data().flatMap({ (data) in
-                        return Menu(dictionary: data)
+                querySnapshot?.documents.forEach({ (document) in
+                    let restaurantRef = ownerRef.document(document.documentID)
+                        .collection("restaurants").document(restaurantIdentifier.documentIdentifier)
+                        .collection("menu")
+                    
+                    restaurantRef.getDocuments(completion: { (querySnapshot, err) in
+                        if let err = err {
+                            print("Error getting documents: \(err)")
+                        } else {
+                            if let menus = querySnapshot?.documents.flatMap({
+                                $0.data().flatMap({ (data) in
+                                    return Menu(dictionary: data)
+                                })
+                            }) {
+                                completion(menus)
+                            }
+                            else {
+                                print("Something went wrong")
+                            }
+                        }
                     })
-                }) {
-                    completion(menus)
-                }
+                })
             }
         }
+    
+//        let ref = self.db
+//            .collection("restaurantOwner").document((Auth.auth().currentUser?.uid)!)
+//            .collection("restaurants").document(restaurantIdentifier.documentIdentifier)
+//            .collection("menu")
+//
+//        ref.getDocuments { (querySnapshot, err) in
+//            if let err = err {
+//                print("Error getting documents: \(err)")
+//            } else {
+//                if let menus = querySnapshot?.documents.flatMap({
+//                    $0.data().flatMap({ (data) in
+//                        return Menu(dictionary: data)
+//                    })
+//                }) {
+//                    completion(menus)
+//                }
+//                else {
+//                    print("Something went wrong")
+//                }
+//            }
+//        }
     }
     
     
@@ -207,91 +306,133 @@ class FirebaseManager {
     func uploadReviewDummyData(restaurantIdentifier: RestaurantIdentifier, completion: @escaping () -> Void) {
         let batch = db.batch()
         
-        let reviewDoc = db.collection("restaurantOwner").document((Auth.auth().currentUser?.uid)!)
-            .collection("restaurants").document(restaurantIdentifier.documentIdentifier)
-            .collection("reviews").document()
-        
-        for index in 1..<30 {
-            let rand  = arc4random_uniform(5)
-            
-            if rand != 0 {
-                let review = Review(username: "Dummy", rating: Int(rand), comment: "Dummy Comment", date: "Dummy Date")
-                batch.setData(review.dictionary, forDocument: reviewDoc)
-            }
-        }
-        
-        batch.commit() { err in
+        let ownerRef = self.db
+            .collection("restaurantOwner")
+        print(restaurantIdentifier.restaurant.name)
+        ownerRef.getDocuments { (querySnapshot, err) in
             if let err = err {
-                print("Error writing batch \(err)")
+                print("Error getting documents: \(err)")
             } else {
-                print("Batch write 'dummyData' to 'restaurant' succeeded.")
-                completion()
+                querySnapshot?.documents.forEach({ (document) in
+                    let restaurantRef = ownerRef.document(document.documentID)
+                        .collection("restaurants").document(restaurantIdentifier.documentIdentifier)
+                        .collection("reviews").document()
+                    
+                    for _ in 1..<30 {
+                        let rand  = arc4random_uniform(5)
+
+                        if rand != 0 {
+                            let review = Review(username: "Dummy", rating: Int(rand), comment: "Dummy Comment", date: "Dummy Date")
+                            batch.setData(review.dictionary, forDocument: restaurantRef)
+                            
+                            batch.commit() { err in
+                                if let err = err {
+                                    print("Error writing batch \(err)")
+                                } else {
+                                    print("Batch write 'dummyData' to 'restaurant' succeeded.")
+                                    completion()
+                                }
+                            }
+                        }
+                    }
+                })
             }
         }
     }
     
     func upload(review: Review, restaurantIdentifier: RestaurantIdentifier, completion: @escaping () -> Void) {
+        
         let batch = db.batch()
         
-        let reviewDoc = db.collection("restaurantOwner").document((Auth.auth().currentUser?.uid)!)
-            .collection("restaurants").document(restaurantIdentifier.documentIdentifier)
-            .collection("reviews").document()
-        
-        batch.setData(review.dictionary, forDocument: reviewDoc)
-        batch.commit() { err in
+        let ownerRef = self.db
+            .collection("restaurantOwner")
+        print(restaurantIdentifier.restaurant.name)
+        ownerRef.getDocuments { (querySnapshot, err) in
             if let err = err {
-                print("Error writing batch \(err)")
+                print("Error getting documents: \(err)")
             } else {
-                print("Batch write 'review' to 'restaurant' succeeded.")
-                completion()
+                querySnapshot?.documents.forEach({ (document) in
+                    let restaurantRef = ownerRef.document(document.documentID)
+                        .collection("restaurants").document(restaurantIdentifier.documentIdentifier)
+                        .collection("reviews").document()
+                    
+                    batch.setData(review.dictionary, forDocument: restaurantRef)
+                    
+                    batch.commit() { err in
+                        if let err = err {
+                            print("Error writing batch \(err)")
+                        } else {
+                            print("Batch write 'dummyData' to 'restaurant' succeeded.")
+                            completion()
+                        }
+                    }
+                })
             }
         }
+    
     }
     
     func fetchReviews(from restaurantIdentifier: RestaurantIdentifier, completion: @escaping (([Review]) -> Void)) {
-        
-        let ref = db.collection("restaurantOwner").document((Auth.auth().currentUser?.uid)!)
-            .collection("restaurants").document(restaurantIdentifier.documentIdentifier)
-            .collection("reviews")
-        
-        ref.getDocuments { (querySnapshot, err) in
-            if let err = err {
-                print("Error writing batch \(err)")
-            } else {
-                if let reviews = querySnapshot?.documents.flatMap({
-                    $0.data().flatMap({ (data) in
-                        return Review(dictionary: data)
-                    })
-                }) {
 
-                    completion(reviews)
-                }
+        let ownerRef = self.db
+            .collection("restaurantOwner")
+    
+        ownerRef.getDocuments { (querySnapshot, err) in
+            if let err = err {
+                print("Error getting documents: \(err)")
+            } else {
+                querySnapshot?.documents.forEach({ (document) in
+                    let restaurantRef = ownerRef.document(document.documentID)
+                        .collection("restaurants").document(restaurantIdentifier.documentIdentifier)
+                        .collection("reviews")
+                    
+                    restaurantRef.getDocuments(completion: { (querySnapshot, err) in
+                        if let err = err {
+                            print("Error getting documents: \(err)")
+                        } else {
+                            if let reviews = querySnapshot?.documents.compactMap({
+                                $0.data().flatMap({ (data) in
+                                    return Review(dictionary: data)
+                                })
+                            }) {
+                                completion(reviews)
+                            }
+                            else {
+                                print("fetching went wrong")
+                            }
+                        }
+                    })
+                })
             }
         }
+//
+//        ref.getDocuments { (querySnapshot, err) in
+//            if let err = err {
+//                print("Error writing batch \(err)")
+//            } else {
+//                if let reviews = querySnapshot?.documents.flatMap({
+//                    $0.data().flatMap({ (data) in
+//                        return Review(dictionary: data)
+//                    })
+//                }) {
+//                    completion(reviews)
+//                }
+//            }
+//        }
     }
     
-    func calculateAverageRating(from restaurantIdentifier: RestaurantIdentifier, completion: @escaping ((Int) -> Void)) {
-        let ref = db.collection("restaurantOwner").document((Auth.auth().currentUser?.uid)!)
-            .collection("restaurants").document(restaurantIdentifier.documentIdentifier)
-            .collection("reviews")
-        
-        var totalRating = 0
-        
-        ref.getDocuments { (querySnapshot, err) in
-            if let err = err {
-                print("Error writing batch \(err)")
-            } else {
-                if let reviews = querySnapshot?.documents.flatMap({
-                    $0.data().flatMap({ (data) in
-                        return Review(dictionary: data)
-                    })
-                }) {
-                    reviews.forEach({
-                        totalRating = totalRating + $0.rating
-                    })
-                    
-                    completion(totalRating / reviews.count)
+    func calculateAverageRating(from restaurantIdentifier: RestaurantIdentifier, completion: @escaping ((Double) -> Void)) {
+        fetchReviews(from: restaurantIdentifier) { (reviews) in
+            if reviews.count != 0 {
+                var totalRating = 0
+                for review in reviews {
+                    totalRating = totalRating + review.rating
                 }
+                let avgRating = Double(totalRating) / Double(reviews.count)
+                completion(avgRating)
+            }
+            else {
+                completion(0)
             }
         }
     }

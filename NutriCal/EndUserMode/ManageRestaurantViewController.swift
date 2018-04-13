@@ -92,7 +92,7 @@ class ManageRestaurantsViewController: UIViewController {
         
         if showLoadingIndicator { SwiftSpinner.show(indicatorText) }
         
-        self.manager.fetchRestaurant { (restaurants) in
+        self.manager.fetchOwnerRestaurant { (restaurants) in
             
             // Caching?
             for restaurantIdentifier in restaurants {

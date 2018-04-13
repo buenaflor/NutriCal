@@ -10,12 +10,15 @@ import UIKit
 
 import SideMenu
 import Firebase
+import SwiftSpinner
 
-enum SideMenuOptions: String {
-    case loginAsRestaurant
-    case loginAsUser
-    case filter
-    case manageRestaurant
+enum SideMenuType: String {
+    case login = "Login"
+    case filter = "Filter"
+    case manageRestaurant = "Manage Restaurant"
+    case signout = "Sign Out"
+    case settings = "Settings"
+    case favourites = "Favourites"
     case none
 }
 
@@ -34,6 +37,11 @@ struct SideMenuHeader {
     let name: String
 }
 
+struct SideMenuOption {
+    let type: SideMenuType
+    let image: UIImage
+}
+
 protocol SideMenuHeaderViewDelegate: class {
     func sideMenuHeaderView(_ sideMenuHeaderView: UIView, didClick button: UIButton)
 }
@@ -42,20 +50,14 @@ class SideMenuHeaderView: UIView {
     
     weak var delegate: SideMenuHeaderViewDelegate?
     
-    private lazy var nameLabel: UILabel = {
+    internal let nameLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 1
         label.font = UIFont.boldSystemFont(ofSize: 20)
-        if let name = Auth.auth().currentUser  {
-            label.text = "Welcome, \(Auth.auth().currentUser?.email ?? "Name not available")"
-        }
-        else {
-            label.text = "Login to access more features"
-        }
         return label
     }()
     
-    internal lazy var backButton: UIButton = {
+    internal let backButton: UIButton = {
         let button = UIButton()
         button.setTitle("Back", for: .normal)
         button.backgroundColor = .lightGray
@@ -101,6 +103,8 @@ class SideMenuViewController: UIViewController {
     
     weak var delegate: SideMenuViewControllerDelegate?
     
+    let firebaseManager = FirebaseManager()
+    
     var filterOption: FilterOption?
     
     private lazy var sideMenuHeaderView: SideMenuHeaderView = {
@@ -113,39 +117,41 @@ class SideMenuViewController: UIViewController {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.alwaysBounceVertical = false
+        tableView.register(SideMenuCell.self)
+        tableView.register(FilterCell.self)
         sideMenuHeaderView.delegate = self
         sideMenuHeaderView.backButton.isHidden = true
         tableView.tableHeaderView = sideMenuHeaderView
+        tableView.separatorStyle = .none
         return tableView
     }()
     
-    private var sideMenuOptions = [SideMenuOptions.loginAsUser, SideMenuOptions.loginAsRestaurant, SideMenuOptions.filter, SideMenuOptions.manageRestaurant]
+    private var sideMenuOptions = [SideMenuOption]()
+    private var filteredSideMenuOptions = [SideMenuOption]()
     private var filterOptions = [FilterOption.carbs, FilterOption.fats, FilterOption.kCal, FilterOption.location, FilterOption.price, FilterOption.protein, FilterOption.rating]
-    private var currentOption: SideMenuOptions?
+    private var currentOption: SideMenuType?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.setupView()
+        self.populateSideMenu()
+        self.refreshTableView()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        self.tableView.reloadData()
+    private func populateSideMenu() {
+        self.sideMenuOptions.append(SideMenuOption(type: SideMenuType.login, image: #imageLiteral(resourceName: "login").withRenderingMode(.alwaysTemplate)))
+        self.sideMenuOptions.append(SideMenuOption(type: SideMenuType.manageRestaurant, image: #imageLiteral(resourceName: "manage").withRenderingMode(.alwaysTemplate)))
+        self.sideMenuOptions.append(SideMenuOption(type: SideMenuType.filter, image: #imageLiteral(resourceName: "slider").withRenderingMode(.alwaysTemplate)))
+        self.sideMenuOptions.append(SideMenuOption(type: SideMenuType.favourites, image: #imageLiteral(resourceName: "heart").withRenderingMode(.alwaysTemplate)))
+        self.sideMenuOptions.append(SideMenuOption(type: SideMenuType.settings, image: #imageLiteral(resourceName: "settings").withRenderingMode(.alwaysTemplate)))
+        self.sideMenuOptions.append(SideMenuOption(type: SideMenuType.signout, image: #imageLiteral(resourceName: "signout").withRenderingMode(.alwaysTemplate)))
     }
     
     private func setupView() {
         self.view.backgroundColor = .white
         
         self.configureConstraints()
-        
-        if currentOption == .filter {
-            self.tableView.register(FilterCell.self)
-        }
-        else {
-            self.tableView.register(SideMenuCell.self)
-        }
     }
     
     private func configureConstraints() {
@@ -162,6 +168,40 @@ class SideMenuViewController: UIViewController {
         let navController = UINavigationController(rootViewController: loginRestaurantViewController)
         self.present(navController, animated: true, completion: nil)
     }
+    
+    func refreshTableView() {
+        
+        self.firebaseManager.fetchRole { (isRestaurantOwner) in
+            print("Is restaurant logged in: \(isRestaurantOwner)")
+            
+            if !isRestaurantOwner {
+                self.filteredSideMenuOptions = self.sideMenuOptions.filter({
+                    $0.type != SideMenuType.manageRestaurant
+                })
+            }
+            else {
+                self.filteredSideMenuOptions = self.sideMenuOptions
+            }
+            
+            if Auth.auth().currentUser?.email == nil {
+                self.filteredSideMenuOptions = self.filteredSideMenuOptions.filter({
+                    $0.type != SideMenuType.signout
+                })
+                self.sideMenuHeaderView.nameLabel.text = "Login to access more features"
+                print("email is nil")
+
+            }
+            else {
+                self.filteredSideMenuOptions = self.filteredSideMenuOptions.filter({
+                    $0.type != SideMenuType.login
+                })
+                self.sideMenuHeaderView.nameLabel.text = "Welcome, \(Auth.auth().currentUser?.email ?? "Name not available")"
+                print("user is logged in")
+            }
+            
+            self.tableView.reloadData()
+        }
+    }
 }
 
 extension SideMenuViewController: UITableViewDataSource {
@@ -171,7 +211,7 @@ extension SideMenuViewController: UITableViewDataSource {
             return self.filterOptions.count
         }
         else {
-            return self.sideMenuOptions.count
+            return self.filteredSideMenuOptions.count
         }
     }
     
@@ -179,16 +219,18 @@ extension SideMenuViewController: UITableViewDataSource {
         
         if currentOption == .filter {
             let cell = tableView.dequeueReusableCell(FilterCell.self, forIndexPath: indexPath)
-
+            
             cell.filterOption = filterOptions[indexPath.row]
             cell.delegate = self
             
             return cell
         }
         else {
-            let cell = tableView.dequeueReusableCell(UITableViewCell.self, forIndexPath: indexPath)
+            let cell = tableView.dequeueReusableCell(SideMenuCell.self, forIndexPath: indexPath)
             
-            cell.textLabel?.text = sideMenuOptions[indexPath.row].rawValue
+            cell.customTextLabel.text = filteredSideMenuOptions[indexPath.row].type.rawValue
+            cell.customImageView.image = filteredSideMenuOptions[indexPath.row].image
+            
             
             return cell
         }
@@ -202,23 +244,41 @@ extension SideMenuViewController: UITableViewDataSource {
 extension SideMenuViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if currentOption != .filter {
-            switch sideMenuOptions[indexPath.row] {
-            case SideMenuOptions.loginAsRestaurant:
-                let loginRestaurantViewController = LoginRestaurantViewController()
-                let navController = UINavigationController(rootViewController: loginRestaurantViewController)
-                self.present(navController, animated: true, completion: nil)
-            case SideMenuOptions.loginAsUser:
-                let loginEndUserViewController = LoginEndUserViewController()
-                let navController = UINavigationController(rootViewController: loginEndUserViewController)
-                self.present(navController, animated: true, completion: nil)
-            case SideMenuOptions.filter:
+            switch filteredSideMenuOptions[indexPath.row].type {
+                
+            case SideMenuType.login:
+                let loginViewController = LoginViewController()
+                loginViewController.delegate = self
+                self.navigationController?.pushViewController(loginViewController, animated: true)
+                
+            case SideMenuType.filter:
                 self.currentOption = .filter
                 sideMenuHeaderView.backButton.isHidden = false
                 tableView.reloadData()
-            case SideMenuOptions.manageRestaurant:
+                
+            case SideMenuType.manageRestaurant:
                 let manageRestaurantsViewController = ManageRestaurantsViewController()
                 let navController = UINavigationController(rootViewController: manageRestaurantsViewController)
                 self.present(navController, animated: true, completion: nil)
+                
+            case SideMenuType.signout:
+                let alertController = UIAlertController(title: "Log Out", message: "You are about to log out. Are you sure?", preferredStyle: .alert)
+                alertController.addAction(UIAlertAction(title: "Log Out", style: .default, handler: { _ in
+                    try! Auth.auth().signOut()
+                    self.refreshTableView()
+                    self.dismiss(animated: true, completion: nil)
+                }))
+                alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+                self.present(alertController, animated: true)
+                
+            case SideMenuType.settings:
+                let settingsViewController = SettingsViewController()
+                self.navigationController?.pushViewController(settingsViewController, animated: true)
+                
+            case SideMenuType.favourites:
+                let favouritesViewController = FavouritesViewController()
+                self.navigationController?.pushViewController(favouritesViewController, animated: true)
+                
             default:
                 break;
             }
@@ -239,6 +299,16 @@ extension SideMenuViewController: SideMenuHeaderViewDelegate {
         self.currentOption = .none
         self.sideMenuHeaderView.backButton.isHidden = true
         self.tableView.reloadData()
+    }
+}
+
+extension SideMenuViewController: LoginViewControllerDelegate {
+    func loginViewControllerLoggedIn(_ loginViewController: LoginViewController) {
+        
+        self.refreshTableView()
+        
+        // getting event click from signing in, update UI
+        print("logged in bruh")
     }
     
     

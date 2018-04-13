@@ -18,6 +18,7 @@ class RestaurantMenuCell: UICollectionViewCell {
     
     var dataSource: Any? {
         didSet {
+            print("sup identifier")
             guard let restaurantIdentifier = dataSource as? RestaurantIdentifier else { return }
             
             self.restaurantView.dataSource = restaurantIdentifier
@@ -30,6 +31,7 @@ class RestaurantMenuCell: UICollectionViewCell {
                     firebaseManager.fetchFood(restaurantIdentifier: restaurantIdentifier, menu: menu, completion: { (internalMenu) in
                         self.internalMenus.append(internalMenu)
                         self.collectionView.reloadData()
+                        
                     })
                 }
             }

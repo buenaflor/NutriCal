@@ -42,12 +42,22 @@ class HomeViewController: UIViewController {
         
         let firebaseManager = FirebaseManager()
         
-        firebaseManager.fetchRestaurant { (restaurantIdentifiers) in
-            self.restaurantIdentifiers = restaurantIdentifiers
-        
+        firebaseManager.fetchEndUserRestaurant { (restaurantIdentifiers) in
+            restaurantIdentifiers.forEach({
+                self.restaurantIdentifiers.append($0)
+            })
             self.collectionView.reloadData()
-            print("reloaded")
         }
+        
+//        firebaseManager.fetchOwnerRestaurant { (restaurantIdentifiers) in
+//            self.restaurantIdentifiers = restaurantIdentifiers
+//
+//            self.collectionView.reloadData()
+//
+//            print(restaurantIdentifiers)
+//            print("reloaded")
+//        }
+        
         
         self.setupView()
     }
@@ -59,7 +69,7 @@ class HomeViewController: UIViewController {
         let menuLeftNavigationController = UISideMenuNavigationController(rootViewController: leftSideMenuViewController)
         
         SideMenuManager.default.menuLeftNavigationController = menuLeftNavigationController
-
+        
         SideMenuManager.default.menuAddPanGestureToPresent(toView: self.navigationController!.navigationBar)
         SideMenuManager.default.menuAddScreenEdgePanGesturesToPresent(toView: self.navigationController!.view)
         SideMenuManager.default.menuWidth = max(round(min((UIScreen.main.bounds.width), (UIScreen.main.bounds.height)) * 0.80), 240)
@@ -78,8 +88,8 @@ class HomeViewController: UIViewController {
     }
     
     private func configureConstraints() {
-    
-
+        
+        
         self.view.add(subview: self.collectionView) { (v, p) in [
             v.topAnchor.constraint(equalTo: p.safeAreaLayoutGuide.topAnchor),
             v.leadingAnchor.constraint(equalTo: p.safeAreaLayoutGuide.leadingAnchor),
@@ -109,7 +119,7 @@ extension HomeViewController: UICollectionViewDataSource {
         
         cell.dataSource = self.restaurantIdentifiers[indexPath.row]
         cell.delegate = self
-
+        
         return cell
     }
 }

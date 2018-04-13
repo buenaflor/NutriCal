@@ -20,7 +20,9 @@ class LoginRestaurantViewController: LoginBaseViewController, LoginControllerTyp
     
     var loginType: LoginTypes {
         return LoginTypes.login
-    }    
+    }
+    
+    weak var customDelegate: LoginBaseViewControllerDelegate?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -72,6 +74,7 @@ extension LoginRestaurantViewController: LoginBaseViewControllerDelegate {
                         let alertController = UIAlertController(title: "Success", message: "Successfully Logged In!", preferredStyle: .alert)
                         
                         let defaultAction = UIAlertAction(title: "OK", style: .cancel, handler: { action in
+                            self.customDelegate?.loginBaseViewController(loginBaseViewController, didClickSubmit: button, with: controllerType, usernameText, passwordText)
                             self.dismiss(animated: true, completion: nil)
                         })
                         alertController.addAction(defaultAction)

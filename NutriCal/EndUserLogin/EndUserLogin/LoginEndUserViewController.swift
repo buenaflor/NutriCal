@@ -18,7 +18,9 @@ class LoginEndUserViewController: LoginBaseViewController, LoginControllerType {
     
     var loginType: LoginTypes {
         return LoginTypes.login
-    }    
+    }
+    
+    weak var customDelegate: LoginBaseViewControllerDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -60,6 +62,7 @@ extension LoginEndUserViewController: LoginBaseViewControllerDelegate {
                 let alertController = UIAlertController(title: "Error", message: "Please enter your email and password", preferredStyle: .alert)
                 
                 let defaultAction = UIAlertAction(title: "OK", style: .cancel, handler: nil)
+                
                 alertController.addAction(defaultAction)
                 
                 present(alertController, animated: true, completion: nil)
@@ -70,6 +73,7 @@ extension LoginEndUserViewController: LoginBaseViewControllerDelegate {
                         let alertController = UIAlertController(title: "Success", message: "Successfully Logged In!", preferredStyle: .alert)
                         
                         let defaultAction = UIAlertAction(title: "OK", style: .cancel, handler: { action in
+                        self.customDelegate?.loginBaseViewController(loginBaseViewController, didClickSubmit: button, with: controllerType, usernameText, passwordText)
                             self.dismiss(animated: true, completion: nil)
                         })
                         alertController.addAction(defaultAction)

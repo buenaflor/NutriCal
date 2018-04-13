@@ -9,8 +9,11 @@
 import UIKit
 
 import SDWebImage
+import Cosmos
 
 class ManageRestaurantCell: UITableViewCell {
+    
+    let firebaseManager = FirebaseManager()
     
     var dataSource: Any? {
         didSet {
@@ -22,7 +25,7 @@ class ManageRestaurantCell: UITableViewCell {
             else {
                 self.restaurantLogoImageView.image = #imageLiteral(resourceName: "pexels-photo-696218")
             }
-
+            
             switch restaurantIdentifier.restaurant.confirmation {
             case ConfirmationState.pending.rawValue:
                 self.statusCodeLabel.text = "Status: Pending"
@@ -37,14 +40,16 @@ class ManageRestaurantCell: UITableViewCell {
                 break;
             }
             
+            self.firebaseManager.calculateAverageRating(from: restaurantIdentifier) { (rating) in
+                self.cosmosView.rating = rating
+            }
+            
             self.restaurantNameLabel.text = restaurantIdentifier.restaurant.name
             
             let street = restaurantIdentifier.restaurant.street
             let postalCode = restaurantIdentifier.restaurant.postalCode
             let city = restaurantIdentifier.restaurant.city
             self.addressLabel.text = "\(street), \(postalCode) \(city)"
-            
-            self.avgRatingLabel.text = "Avg. Rating: "
         }
     }
     
@@ -69,13 +74,18 @@ class ManageRestaurantCell: UITableViewCell {
         return label
     }()
     
+    private let cosmosView: CosmosView = {
+        let view = CosmosView()
+        return view
+    }()
+    
     private let restaurantLogoImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.layer.masksToBounds = true
         return imageView
     }()
     
-    private let statusCodeLabel: UILabel = {
+    internal let statusCodeLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "Futura", size: 15.0)
         label.numberOfLines = 1
@@ -122,13 +132,13 @@ class ManageRestaurantCell: UITableViewCell {
             v.leadingAnchor.constraint(equalTo: leftContainerView.trailingAnchor)
             ]}
         
-        self.add(subview: avgRatingLabel) { (v, p) in [
+        self.add(subview: cosmosView) { (v, p) in [
             v.topAnchor.constraint(equalTo: addressLabel.bottomAnchor, constant: 5),
             v.leadingAnchor.constraint(equalTo: leftContainerView.trailingAnchor)
             ]}
         
         self.add(subview: statusCodeLabel) { (v, p) in [
-            v.topAnchor.constraint(equalTo: avgRatingLabel.bottomAnchor, constant: 5),
+            v.topAnchor.constraint(equalTo: cosmosView.bottomAnchor, constant: 5),
             v.leadingAnchor.constraint(equalTo: leftContainerView.trailingAnchor)
             ]}
     }

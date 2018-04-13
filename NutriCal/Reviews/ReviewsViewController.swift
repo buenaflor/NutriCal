@@ -162,12 +162,18 @@ class ReviewHeaderView: UIView {
             formatter.dateFormat = "dd.MM.yyyy"
             let dateString = formatter.string(from: date)
             
+//            guard let restaurantIdentifiers = dataSource as? RestaurantIdentifier else { return }
+//            firebaseManager.uploadReviewDummyData(restaurantIdentifier: restaurantIdentifiers) {
+//                print("done")
+//            }
+            
             guard
                 let restaurantIdentifier = dataSource as? RestaurantIdentifier,
-                let currentUserEmail = Auth.auth().currentUser?.email,
                 let comment = self.comment,
                 let rating = self.selectedRating
                 else { return }
+            
+            let currentUserEmail = Auth.auth().currentUser?.email ?? "Username not available"
             
             let review = Review(username: currentUserEmail, rating: rating, comment: comment, date: dateString)
             
@@ -317,6 +323,7 @@ extension ReviewsViewController: ReviewHeaderViewDelegate {
         alertController.addAction(UIAlertAction(title: "Done", style: .default, handler: { (action) in
             self.reviews.append(review)
             self.tableView.reloadData()
+            self.navigationController?.popViewController(animated: true)
         }))
         
         self.present(alertController, animated: true, completion: nil)

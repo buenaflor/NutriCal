@@ -27,7 +27,7 @@ class RestaurantView: UIView {
             self.priceIndicatorLabel.text = "€€"
             
             self.firebaseManager.calculateAverageRating(from: restaurant) { (rating) in
-                self.cosmosView.rating = Double(rating)
+                self.cosmosView.rating = rating
             }
             self.firebaseManager.fetchReviews(from: restaurant) { (reviews) in
                 self.cosmosView.text = "\((reviews.count))"
