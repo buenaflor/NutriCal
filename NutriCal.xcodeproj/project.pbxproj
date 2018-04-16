@@ -15,6 +15,10 @@
 		346D80162080BBD9007FFAF4 /* FavouritesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346D80152080BBD9007FFAF4 /* FavouritesViewController.swift */; };
 		346D801920848966007FFAF4 /* NutriCal.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 346D801720848966007FFAF4 /* NutriCal.xcdatamodeld */; };
 		346D801B208494B7007FFAF4 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346D801A208494B7007FFAF4 /* Constants.swift */; };
+		346D801D2084BE62007FFAF4 /* UIColor+ThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346D801C2084BE62007FFAF4 /* UIColor+ThemeManager.swift */; };
+		346D801F2084C585007FFAF4 /* OnBoardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346D801E2084C585007FFAF4 /* OnBoardingViewController.swift */; };
+		346D80212084C64F007FFAF4 /* ThemesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346D80202084C64F007FFAF4 /* ThemesViewController.swift */; };
+		346D80232084CD62007FFAF4 /* OnBoardingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346D80222084CD62007FFAF4 /* OnBoardingCell.swift */; };
 		348DBBC3207B5A98001FD6F3 /* RestaurantEndUserDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348DBBC2207B5A98001FD6F3 /* RestaurantEndUserDetailViewController.swift */; };
 		348DBBC5207B698F001FD6F3 /* RestaurantEndUserDetailFoodCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348DBBC4207B698F001FD6F3 /* RestaurantEndUserDetailFoodCell.swift */; };
 		348DBBC7207B9924001FD6F3 /* RestaurantEndUserDetailSearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348DBBC6207B9924001FD6F3 /* RestaurantEndUserDetailSearchViewController.swift */; };
@@ -94,6 +98,10 @@
 		346D80152080BBD9007FFAF4 /* FavouritesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavouritesViewController.swift; sourceTree = "<group>"; };
 		346D801820848966007FFAF4 /* NutriCal.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = NutriCal.xcdatamodel; sourceTree = "<group>"; };
 		346D801A208494B7007FFAF4 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		346D801C2084BE62007FFAF4 /* UIColor+ThemeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+ThemeManager.swift"; sourceTree = "<group>"; };
+		346D801E2084C585007FFAF4 /* OnBoardingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnBoardingViewController.swift; sourceTree = "<group>"; };
+		346D80202084C64F007FFAF4 /* ThemesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemesViewController.swift; sourceTree = "<group>"; };
+		346D80222084CD62007FFAF4 /* OnBoardingCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnBoardingCell.swift; sourceTree = "<group>"; };
 		348DBBC2207B5A98001FD6F3 /* RestaurantEndUserDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestaurantEndUserDetailViewController.swift; sourceTree = "<group>"; };
 		348DBBC4207B698F001FD6F3 /* RestaurantEndUserDetailFoodCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestaurantEndUserDetailFoodCell.swift; sourceTree = "<group>"; };
 		348DBBC6207B9924001FD6F3 /* RestaurantEndUserDetailSearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestaurantEndUserDetailSearchViewController.swift; sourceTree = "<group>"; };
@@ -189,6 +197,7 @@
 			isa = PBXGroup;
 			children = (
 				346D80122080B7B5007FFAF4 /* SettingsViewController.swift */,
+				346D80202084C64F007FFAF4 /* ThemesViewController.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -282,6 +291,7 @@
 			children = (
 				34B8E470206E20790010ADDE /* UIKit+Helpers.swift */,
 				34ADA760206D7E8800C31D37 /* UIColors+CustomColors.swift */,
+				346D801C2084BE62007FFAF4 /* UIColor+ThemeManager.swift */,
 				34C7BA24207F4AC50049D7B1 /* Date.swift */,
 				346D801A208494B7007FFAF4 /* Constants.swift */,
 			);
@@ -443,6 +453,8 @@
 		34C5C85620754BCC00498B6E /* Onboarding */ = {
 			isa = PBXGroup;
 			children = (
+				346D801E2084C585007FFAF4 /* OnBoardingViewController.swift */,
+				346D80222084CD62007FFAF4 /* OnBoardingCell.swift */,
 			);
 			path = Onboarding;
 			sourceTree = "<group>";
@@ -839,12 +851,15 @@
 				34B8E479206E23EA0010ADDE /* TableViewModel.swift in Sources */,
 				343F37F4207794F700DCBE40 /* LocalCollection.swift in Sources */,
 				346D80162080BBD9007FFAF4 /* FavouritesViewController.swift in Sources */,
+				346D80232084CD62007FFAF4 /* OnBoardingCell.swift in Sources */,
 				34C5C8582076022100498B6E /* AddIngredientsViewController.swift in Sources */,
 				34C5C85A2076147C00498B6E /* InternalRestaurant.swift in Sources */,
 				34BAB23520719B9100E39E8B /* FilterCell.swift in Sources */,
+				346D801D2084BE62007FFAF4 /* UIColor+ThemeManager.swift in Sources */,
 				34ADA731206D7BA700C31D37 /* AppDelegate.swift in Sources */,
 				34DA7F92207E2C8E009C0BC1 /* Review.swift in Sources */,
 				34D521AE207423B800528852 /* ManageRestaurantCell.swift in Sources */,
+				346D801F2084C585007FFAF4 /* OnBoardingViewController.swift in Sources */,
 				34BAB22F20718CE600E39E8B /* LoginEndUserViewController.swift in Sources */,
 				34BAB221206ED2EA00E39E8B /* SignUpRestaurantViewController.swift in Sources */,
 				34B8E47D206E2C770010ADDE /* RestaurantMenuCell.swift in Sources */,
@@ -853,6 +868,7 @@
 				343F37F7207B4E2200DCBE40 /* BaseRestaurantDetailViewController.swift in Sources */,
 				34D521AC207375BC00528852 /* EditRestaurantItemsViewController.swift in Sources */,
 				34BAB225206FF7F200E39E8B /* MapViewController.swift in Sources */,
+				346D80212084C64F007FFAF4 /* ThemesViewController.swift in Sources */,
 				34C7BA21207F38D10049D7B1 /* RatingCell.swift in Sources */,
 				348DBBCA207CC6C4001FD6F3 /* ReviewsViewController.swift in Sources */,
 				34BAB22D207189BA00E39E8B /* User.swift in Sources */,

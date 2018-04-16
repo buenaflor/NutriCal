@@ -40,13 +40,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func configureAppearances() {
-        UINavigationBar.appearance().barTintColor = UIColor.StandardMode.TabBarColor
-        UINavigationBar.appearance().tintColor = .white
-        
-        UITabBar.appearance().tintColor = .white
-        UITabBar.appearance().barTintColor = UIColor.StandardMode.TabBarColor
-        
-        UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).defaultTextAttributes = [NSAttributedStringKey.foregroundColor.rawValue: UIColor.white]
+    
+        ThemeManager.applyTheme(theme: ThemeManager.currentTheme())
     }
 }
-

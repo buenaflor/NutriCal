@@ -9,60 +9,6 @@
 import UIKit
 import MapKit
 
-//// - MARK: ReusableView
-//
-//public protocol ReusableView: class {
-//    static var defaultReuseIdentifier: String { get }
-//}
-//
-//public extension ReusableView where Self: UIView {
-//    public static var defaultReuseIdentifier: String {
-//        return NSStringFromClass(self)
-//    }
-//}
-//
-//extension UITableViewCell: ReusableView { }
-//extension UITableViewHeaderFooterView: ReusableView { }
-//
-//public extension UITableView {
-//    func register<T: UITableViewCell>(_ cellClass: T.Type) {
-//        register(cellClass, forCellReuseIdentifier: cellClass.defaultReuseIdentifier)
-//    }
-//    
-//    func register<T: UITableViewHeaderFooterView>(_ aClass: T.Type) {
-//        register(aClass, forHeaderFooterViewReuseIdentifier: aClass.defaultReuseIdentifier)
-//    }
-//    
-//    func dequeueReusableCell<T: UITableViewCell>(forIndexPath indexPath: IndexPath) -> T {
-//        return dequeueReusableCell(T.self, forIndexPath: indexPath)
-//    }
-//    
-//    func dequeueReusableCell<T: UITableViewCell>(_ type: T.Type, forIndexPath indexPath: IndexPath) -> T {
-//        register(type)
-//        
-//        guard let cell = dequeueReusableCell(withIdentifier: type.defaultReuseIdentifier, for: indexPath) as? T else {
-//            fatalError("Could not dequeue cell with identifier: \(type.defaultReuseIdentifier)")
-//        }
-//        
-//        return cell
-//    }
-//    
-//    func dequeueReusableHeaderFooterView<T: UITableViewHeaderFooterView>() -> T {
-//        return dequeueReusableHeaderFooterView(T.self)
-//    }
-//    
-//    func dequeueReusableHeaderFooterView<T: UITableViewHeaderFooterView>(_ type: T.Type) -> T {
-//        register(type)
-//        
-//        guard let view = dequeueReusableHeaderFooterView(withIdentifier: type.defaultReuseIdentifier) as? T else {
-//            fatalError("Could not dequeue cell with identifier: \(type.defaultReuseIdentifier)")
-//        }
-//        
-//        return view
-//    }
-//}
-
-
 // - MARK: UICollectionView
 
 protocol ReusableView: class {
@@ -83,11 +29,11 @@ extension UICollectionView {
     
     func dequeueReusableCell<T: UICollectionViewCell>(_ type: T.Type, forIndexPath indexPath: IndexPath) -> T {
         register(type)
-
+        
         guard let cell = dequeueReusableCell(withReuseIdentifier: type.defaultReuseIdentifier, for: indexPath) as? T else {
             fatalError("Could not dequeue cell with identifier: \(type.defaultReuseIdentifier)")
         }
-
+        
         return cell
     }
 }
@@ -95,7 +41,7 @@ extension UICollectionView {
 extension UITableViewCell: ReusableView { }
 extension UITableView {
     
-    func register<T: UITableViewCell>(_: T.Type){
+    func register<T: UITableViewCell>(_: T.Type) {
         register(T.self, forCellReuseIdentifier: T.defaultReuseIdentifier)
     }
     
@@ -109,6 +55,13 @@ extension UITableView {
     }
 }
 
+extension Collection {
+    
+    /// Returns the element at the specified index iff it is within bounds, otherwise nil.
+    subscript (safe index: Index) -> Element? {
+        return indices.contains(index) ? self[index] : nil
+    }
+}
 
 // - MARK: UIView
 
@@ -136,7 +89,7 @@ extension UIView {
         
         NSLayoutConstraint.deactivate(constraints)
     }
-
+    
     public func fillToSuperview(_ subview: UIView) {
         self.add(subview: subview) { (v, p) in [
             v.topAnchor.constraint(equalTo: p.safeAreaLayoutGuide.topAnchor),
@@ -145,18 +98,18 @@ extension UIView {
             v.bottomAnchor.constraint(equalTo: p.safeAreaLayoutGuide.bottomAnchor)
             ]}
     }
-
+    
     
     public func addSeparatorLine(color: UIColor) {
         let view = UIView()
         view.backgroundColor = color
         
-//        self.add(subview: view) { (view, parent) in [
-//            view.heightAnchor.constraint(equalToConstant: 0.5),
-//            view.leadingAnchor.constraint(equalTo: self.leadingAnchor),
-//            view.trailingAnchor.constraint(equalTo: self.trailingAnchor),
-//            view.topAnchor.constraint(equalTo: self.bottomAnchor)
-//            ]}
+        //        self.add(subview: view) { (view, parent) in [
+        //            view.heightAnchor.constraint(equalToConstant: 0.5),
+        //            view.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+        //            view.trailingAnchor.constraint(equalTo: self.trailingAnchor),
+        //            view.topAnchor.constraint(equalTo: self.bottomAnchor)
+        //            ]}
         
         self.add(subview: view) { (v, p) in [
             v.topAnchor.constraint(equalTo: p.bottomAnchor, constant: 20),
@@ -164,8 +117,9 @@ extension UIView {
             v.trailingAnchor.constraint(equalTo: p.trailingAnchor),
             v.heightAnchor.constraint(equalToConstant: 0.5)
             ]}
-    
+        
     }
+    
 }
 
 // - MARK: UISearchBar

@@ -16,6 +16,7 @@ struct Setting {
 enum SettingType: String {
     case general = "General"
     case reset = "Reset"
+    case darkMode = "Choose Theme"
     case showVegan = "Show Vegan Food"
     case resetFavourite = "Reset Favourites"
     case appTutorial = "App Tutorial"
@@ -24,7 +25,7 @@ enum SettingType: String {
 class SettingsViewController: UIViewController {
     
     let settings = [
-        Setting(sectionTitle: SettingType.general, settings: [SettingType.showVegan, SettingType.appTutorial]),
+        Setting(sectionTitle: SettingType.general, settings: [SettingType.showVegan, SettingType.darkMode, SettingType.appTutorial]),
         Setting(sectionTitle: SettingType.reset, settings: [SettingType.resetFavourite])
         ]
     
@@ -34,12 +35,6 @@ class SettingsViewController: UIViewController {
         tableView.dataSource = self
         tableView.register(UITableViewCell.self)
         return tableView
-    }()
-    
-    private lazy var toggleSwitch: UISwitch = {
-        let toggleSwitch = UISwitch()
-        toggleSwitch.addTarget(self, action: #selector(toggleSwitchChanged(sender:)), for: .valueChanged)
-        return toggleSwitch
     }()
     
     private var toggleIsOn: Bool?
@@ -61,7 +56,8 @@ class SettingsViewController: UIViewController {
     }
     
     @objc private func toggleSwitchChanged(sender: UISwitch) {
-        UserDefaults.standard.set(sender.isOn, forKey: Constant.DefaultKey.showVegan)
+
+//        UserDefaults.standard.set(sender.isOn, forKey: Constant.DefaultKey.showVegan)
     }
 }
 
@@ -85,13 +81,23 @@ extension SettingsViewController: UITableViewDataSource {
         let setting = settings[indexPath.section].settings[indexPath.row]
         
         if setting == SettingType.showVegan {
-            cell.accessoryView = self.toggleSwitch
+            let toggleSwitcher = UISwitch()
+            toggleSwitcher.addTarget(self, action: #selector(toggleSwitchChanged(sender:)), for: .valueChanged)
+            toggleSwitcher.tag = indexPath.row
+            
+            cell.accessoryView = toggleSwitcher
         }
         
+        if setting == SettingType.darkMode {
+            cell.detailTextLabel?.text = ThemeManager.currentTheme().title
+        }
+        
+        cell.accessoryType = .disclosureIndicator
         cell.textLabel?.text = setting.rawValue
         
         return cell
     }
+    
 }
 
 extension SettingsViewController: UITableViewDelegate {
@@ -102,6 +108,14 @@ extension SettingsViewController: UITableViewDelegate {
         switch setting {
         case SettingType.resetFavourite:
             print("")
+        case SettingType.appTutorial:
+            let onBoardingViewController = OnBoardingViewController()
+            let navController = UINavigationController(rootViewController: onBoardingViewController)
+            self.present(navController, animated: true, completion: nil)
+        case SettingType.darkMode:
+            let themesViewController = ThemesViewController()
+            let navController = UINavigationController(rootViewController: themesViewController)
+            self.present(navController, animated: true, completion: nil)
         default:
             break
         }
