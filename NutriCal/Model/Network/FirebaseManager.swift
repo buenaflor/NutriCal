@@ -59,7 +59,7 @@ class FirebaseManager {
                 var restaurantIdentifiers = [RestaurantIdentifier]()
                 var count = 0
                 
-                if let restaurants = querySnapshot?.documents.flatMap({
+                if let restaurants = querySnapshot?.documents.compactMap({
                     $0.data().flatMap({ (data) in
                         return Restaurant(dictionary: data)
                     })
@@ -97,7 +97,7 @@ class FirebaseManager {
                             var restaurantIdentifiers = [RestaurantIdentifier]()
                             var count = 0
                             
-                            if let restaurants = querySnapshot?.documents.flatMap({
+                            if let restaurants = querySnapshot?.documents.compactMap({
                                 $0.data().flatMap({ (data) in
                                     return Restaurant(dictionary: data)
                                 })
@@ -133,7 +133,7 @@ class FirebaseManager {
                         if let err = err {
                             print("Error getting documents: \(err)")
                         } else {
-                            if let foods = querySnapshot?.documents.flatMap({
+                            if let foods = querySnapshot?.documents.compactMap({
                                 $0.data().flatMap({ (data) in
                                     return Food(dictionary: data)
                                 })
@@ -146,27 +146,7 @@ class FirebaseManager {
                 })
             }
         }
-        
-//        let ref = self.db
-//            .collection("restaurantOwner").document((Auth.auth().currentUser?.uid)!)
-//            .collection("restaurants").document(restaurantIdentifier.documentIdentifier)
-//            .collection("menu").document(menu.title)
-//            .collection("food")
-//
-//        ref.getDocuments { (querySnapshot, err) in
-//            if let err = err {
-//                print("Error getting documents: \(err)")
-//            } else {
-//                if let foods = querySnapshot?.documents.flatMap({
-//                    $0.data().flatMap({ (data) in
-//                        return Food(dictionary: data)
-//                    })
-//                }) {
-//                    let internalMenu = InternalMenu(menu: menu, foods: foods)
-//                    completion(internalMenu)
-//                }
-//            }
-//        }
+    
     }
     
     func fetchMenu(restaurantIdentifier: RestaurantIdentifier, completion: @escaping (([Menu]) -> Void) ) {
@@ -187,7 +167,7 @@ class FirebaseManager {
                         if let err = err {
                             print("Error getting documents: \(err)")
                         } else {
-                            if let menus = querySnapshot?.documents.flatMap({
+                            if let menus = querySnapshot?.documents.compactMap({
                                 $0.data().flatMap({ (data) in
                                     return Menu(dictionary: data)
                                 })
@@ -202,30 +182,7 @@ class FirebaseManager {
                 })
             }
         }
-    
-//        let ref = self.db
-//            .collection("restaurantOwner").document((Auth.auth().currentUser?.uid)!)
-//            .collection("restaurants").document(restaurantIdentifier.documentIdentifier)
-//            .collection("menu")
-//
-//        ref.getDocuments { (querySnapshot, err) in
-//            if let err = err {
-//                print("Error getting documents: \(err)")
-//            } else {
-//                if let menus = querySnapshot?.documents.flatMap({
-//                    $0.data().flatMap({ (data) in
-//                        return Menu(dictionary: data)
-//                    })
-//                }) {
-//                    completion(menus)
-//                }
-//                else {
-//                    print("Something went wrong")
-//                }
-//            }
-//        }
     }
-    
     
     func addRestaurantToCurrentUser(with name: String, street: String, postalCode: String, city: String, filePath: String, cuisine: String, completion: @escaping () -> Void) {
         
@@ -369,7 +326,49 @@ class FirebaseManager {
                 })
             }
         }
+    }
     
+    func addToFavourite(restaurantIdentifier: RestaurantIdentifier, completion: @escaping () -> Void) {
+        let batch = db.batch()
+        
+        guard let userID = Auth.auth().currentUser?.uid else { return }
+        let docRef = self.db.collection("users").document(userID).collection("favourites").document(restaurantIdentifier.documentIdentifier)
+        
+        batch.setData(restaurantIdentifier.restaurant.dictionary, forDocument: docRef)
+        
+        batch.commit { (err) in
+            if let err = err {
+                print("Error writing batch \(err)")
+            } else {
+                print("Batch write 'favourite' to 'user' succeeded.")
+                completion()
+            }
+        }
+    }
+    
+    func fetchFavourites(completion: @escaping ([RestaurantIdentifier]) -> Void) {
+        guard let userID = Auth.auth().currentUser?.uid else { return }
+        let ref = self.db.collection("users").document(userID).collection("favourites")
+        
+        ref.getDocuments { (querySnapshot, err) in
+            if let err = err {
+                print("Error getting documents: \(err)")
+            } else {
+                var restaurantIdentifiers = [RestaurantIdentifier]()
+                var count = 0
+                if let restaurants = querySnapshot?.documents.compactMap({
+                    $0.data().flatMap({ (data) in
+                        return Restaurant(dictionary: data)
+                    })
+                }) {
+                    querySnapshot?.documents.forEach({ (document) in
+                        restaurantIdentifiers.append(RestaurantIdentifier(restaurant: restaurants[count], documentIdentifier: document.documentID))
+                        count = count + 1
+                    })
+                    completion(restaurantIdentifiers)
+                }
+            }
+        }
     }
     
     func fetchReviews(from restaurantIdentifier: RestaurantIdentifier, completion: @escaping (([Review]) -> Void)) {
@@ -405,20 +404,6 @@ class FirebaseManager {
                 })
             }
         }
-//
-//        ref.getDocuments { (querySnapshot, err) in
-//            if let err = err {
-//                print("Error writing batch \(err)")
-//            } else {
-//                if let reviews = querySnapshot?.documents.flatMap({
-//                    $0.data().flatMap({ (data) in
-//                        return Review(dictionary: data)
-//                    })
-//                }) {
-//                    completion(reviews)
-//                }
-//            }
-//        }
     }
     
     func calculateAverageRating(from restaurantIdentifier: RestaurantIdentifier, completion: @escaping ((Double) -> Void)) {
@@ -429,6 +414,7 @@ class FirebaseManager {
                     totalRating = totalRating + review.rating
                 }
                 let avgRating = Double(totalRating) / Double(reviews.count)
+                print(avgRating)
                 completion(avgRating)
             }
             else {
@@ -438,6 +424,7 @@ class FirebaseManager {
     }
     
     
+    // TESTING - DEV
     
     func listenToRestaurantChanges(change: () -> Void) {
         _ = db.collection("restaurantOwner").document((Auth.auth().currentUser?.uid)!).collection("restaurants")
@@ -454,7 +441,7 @@ class FirebaseManager {
                 documentSnapshot?.documentChanges.forEach({ (diff) in
                     if (diff.type == .added) {
                         let restaurant = Restaurant(dictionary: diff.document.data())
-                        print("added:", restaurant)
+//                        print("added:", restaurant)
                     }
                 })
         }

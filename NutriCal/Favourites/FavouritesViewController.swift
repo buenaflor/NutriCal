@@ -8,6 +8,8 @@
 
 import UIKit
 
+import SwiftSpinner
+
 class FavouritesViewController: UIViewController {
     
     private lazy var tableView: UITableView = {
@@ -18,10 +20,22 @@ class FavouritesViewController: UIViewController {
         return tableView
     }()
     
+    private var restaurantIdentifiers = [RestaurantIdentifier]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        SwiftSpinner.show("Loading Favourites")
+        
         self.setupView()
+        
+        let firebaseManager = FirebaseManager()
+        
+        firebaseManager.fetchFavourites { (restaurantIdentifiers) in
+            self.restaurantIdentifiers = restaurantIdentifiers
+            self.tableView.reloadData()
+            SwiftSpinner.hide()
+        }
     }
     
     private func setupView() {
@@ -36,6 +50,12 @@ class FavouritesViewController: UIViewController {
     
     private func configureConstraints() {
         
+        self.view.add(subview: tableView) { (v, p) in [
+            v.topAnchor.constraint(equalTo: p.safeAreaLayoutGuide.topAnchor),
+            v.leadingAnchor.constraint(equalTo: p.leadingAnchor),
+            v.trailingAnchor.constraint(equalTo: p.trailingAnchor),
+            v.bottomAnchor.constraint(equalTo: p.safeAreaLayoutGuide.bottomAnchor)
+            ]}
     }
     
     @objc private func chooseFavouriteRightBarButtonTapped() {
@@ -62,13 +82,19 @@ class FavouritesViewController: UIViewController {
 extension FavouritesViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
+        return self.restaurantIdentifiers.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(ManageRestaurantCell.self, forIndexPath: indexPath)
         
+        cell.dataSource = self.restaurantIdentifiers[indexPath.row]
+        
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 150
     }
 }
 

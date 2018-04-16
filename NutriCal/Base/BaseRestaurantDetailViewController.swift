@@ -30,8 +30,9 @@ class BaseRestaurantDetailViewController: BaseImagePickerViewController {
             guard let imgURL = URL(string: restaurantIdentifier.restaurant.imageFilePath) else { return }
             
             self.firebaseManager.calculateAverageRating(from: restaurantIdentifier) { (rating) in
-                self.cosmosView.rating = Double(rating)
+                self.cosmosView.rating = rating
             }
+        
             
             self.firebaseManager.fetchReviews(from: restaurantIdentifier) { (reviews) in
                 self.setupCountLabelText(for: self.reviewsCountLabel, count: reviews.count, searchString: "Reviews")
@@ -96,6 +97,7 @@ class BaseRestaurantDetailViewController: BaseImagePickerViewController {
     
     private let cosmosView: CosmosView = {
         let view = CosmosView()
+        view.settings.fillMode = .precise
         view.settings.starSize = 30
         view.settings.textFont = UIFont(name: "Avenir", size: 16)!
         view.isUserInteractionEnabled = false

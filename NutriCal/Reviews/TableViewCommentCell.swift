@@ -48,6 +48,7 @@ class TableViewCommentCell: UITableViewCell {
     
     private let cosmosView: CosmosView = {
         let view = CosmosView()
+        view.settings.fillMode = .precise
         view.settings.starSize = 15
         view.isUserInteractionEnabled = false
         return view

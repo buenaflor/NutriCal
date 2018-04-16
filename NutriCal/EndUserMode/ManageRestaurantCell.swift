@@ -13,8 +13,6 @@ import Cosmos
 
 class ManageRestaurantCell: UITableViewCell {
     
-    let firebaseManager = FirebaseManager()
-    
     var dataSource: Any? {
         didSet {
             guard let restaurantIdentifier = dataSource as? RestaurantIdentifier else { return }
@@ -40,7 +38,9 @@ class ManageRestaurantCell: UITableViewCell {
                 break;
             }
             
-            self.firebaseManager.calculateAverageRating(from: restaurantIdentifier) { (rating) in
+            let firebaseManager = FirebaseManager()
+            
+            firebaseManager.calculateAverageRating(from: restaurantIdentifier) { (rating) in
                 self.cosmosView.rating = rating
             }
             
@@ -76,6 +76,8 @@ class ManageRestaurantCell: UITableViewCell {
     
     private let cosmosView: CosmosView = {
         let view = CosmosView()
+        view.settings.fillMode = .precise
+        view.isUserInteractionEnabled = false
         return view
     }()
     

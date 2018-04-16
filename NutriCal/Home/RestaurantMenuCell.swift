@@ -12,6 +12,7 @@ import SwiftSpinner
 
 protocol RestaurantMenuCellDelegate: class {
     func pushViewController(_ viewController: UIViewController)
+    func restaurantMenuCell(_ restaurantMenuCell: RestaurantMenuCell, didClick button: UIButton)
 }
 
 class RestaurantMenuCell: UICollectionViewCell {
@@ -22,6 +23,7 @@ class RestaurantMenuCell: UICollectionViewCell {
             guard let restaurantIdentifier = dataSource as? RestaurantIdentifier else { return }
             
             self.restaurantView.dataSource = restaurantIdentifier
+            self.restaurantView.delegate = self
             
             let firebaseManager = FirebaseManager()
             firebaseManager.fetchMenu(restaurantIdentifier: restaurantIdentifier) { (menus) in
@@ -153,5 +155,10 @@ extension RestaurantMenuCell: UICollectionViewDelegate {
     }
 }
 
+extension RestaurantMenuCell: RestaurantViewDelegate {
+    func restaurantView(_ restaurantView: UIView, didClick button: UIButton) {
+        self.delegate?.restaurantMenuCell(self, didClick: button)
+    }
+}
 
 

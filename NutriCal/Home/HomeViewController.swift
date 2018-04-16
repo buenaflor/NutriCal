@@ -10,6 +10,7 @@ import UIKit
 
 import SideMenu
 import SwiftSpinner
+import KUIPopOver
 
 class HomeViewController: UIViewController {
     
@@ -142,8 +143,44 @@ extension HomeViewController: UICollectionViewDelegateFlowLayout {
 }
 
 extension HomeViewController: RestaurantMenuCellDelegate {
+    
+    func restaurantMenuCell(_ restaurantMenuCell: RestaurantMenuCell, didClick button: UIButton) {
+        let popOverViewController = DefaultPopOverViewController()
+        popOverViewController.preferredContentSize = CGSize(width: 180, height: 180)
+        popOverViewController.popoverPresentationController?.sourceView = button
+        
+        let customView = CustomPopOverView(settings: [PopOverSettings.favourite, PopOverSettings.share], frame: CGRect(origin: CGPoint(x: 0.0, y: 0.0), size: CGSize(width: 180, height: 180)))
+        let indexPath = self.collectionView.indexPath(for: restaurantMenuCell)
+        
+        customView.delegate = self
+        customView.indexPath = indexPath
+        popOverViewController.view.addSubview(customView)
+        popOverViewController.popoverPresentationController?.sourceRect = button.bounds
+        present(popOverViewController, animated: true, completion: nil)
+
+        
+    }
+    
     func pushViewController(_ viewController: UIViewController) {
         self.navigationController?.pushViewController(viewController, animated: true)
+    }
+}
+
+extension HomeViewController: CustomPopOverViewDelegate {
+    func customPopOverView(_ customPopOverView: CustomPopOverView, didSelectRowAt indexPath: IndexPath, cvIndexPath: IndexPath, title: String, message: String) {
+        
+        let firebaseManager = FirebaseManager()
+        
+        let restaurantIdentifier = self.restaurantIdentifiers[cvIndexPath.row]
+        dismiss(animated: true, completion: nil)
+
+        firebaseManager.addToFavourite(restaurantIdentifier: restaurantIdentifier) {
+            let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+            
+            alertController.addAction(UIAlertAction(title: "Done", style: .default, handler: nil))
+            
+            self.present(alertController, animated: true, completion: nil)
+        }
     }
 }
 
@@ -154,6 +191,96 @@ extension HomeViewController: SideMenuViewControllerDelegate {
     }
 }
 
+enum PopOverSettings: String {
+    case favourite = "Add To Favourite"
+    case share = "Share"
+}
+
+protocol CustomPopOverViewDelegate: class {
+    func customPopOverView(_ customPopOverView: CustomPopOverView, didSelectRowAt indexPath: IndexPath, cvIndexPath: IndexPath, title: String, message: String)
+}
+
+class CustomPopOverView: UIView, KUIPopOverUsable {
+    
+    weak var delegate: CustomPopOverViewDelegate?
+    
+    var arrowDirection: UIPopoverArrowDirection {
+        return .right
+    }
+    
+    var indexPath: IndexPath?
+
+    private var settings = [PopOverSettings]()
+    
+    private lazy var tableView: UITableView = {
+        let tableView = UITableView()
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.register(UITableViewCell.self)
+        tableView.separatorStyle = .none
+        return tableView
+    }()
+    
+    convenience init(settings: [PopOverSettings], frame: CGRect) {
+        self.init()
+        
+        self.settings = settings
+        self.frame = frame
+        self.setupView()
+    }
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+    }
+    
+    private func setupView() {
+        
+        self.configureConstraints()
+    }
+    
+    private func configureConstraints() {
+        self.add(subview: tableView) { (v, p) in [
+            v.topAnchor.constraint(equalTo: p.safeAreaLayoutGuide.topAnchor),
+            v.leadingAnchor.constraint(equalTo: p.leadingAnchor),
+            v.trailingAnchor.constraint(equalTo: p.trailingAnchor),
+            v.bottomAnchor.constraint(equalTo: p.safeAreaLayoutGuide.bottomAnchor)
+            ]}
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+}
+
+extension CustomPopOverView: UITableViewDataSource {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return self.settings.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(UITableViewCell.self, forIndexPath: indexPath)
+        
+        cell.textLabel?.text = self.settings[indexPath.row].rawValue
+        
+        return cell
+    }
+}
+
+extension CustomPopOverView: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        switch settings[indexPath.row] {
+        case PopOverSettings.favourite:
+            guard let cvIndexPath = self.indexPath else { return }
+            self.delegate?.customPopOverView(self, didSelectRowAt: indexPath, cvIndexPath: cvIndexPath, title: "Success", message: "Added to Favourite")
+        default:
+            break;
+        }
+
+    }
+}
 
 
 
