@@ -10,7 +10,16 @@ import UIKit
 
 import SwiftSpinner
 
+enum BaseType {
+    case restaurant
+    case menu
+    case food
+}
+
 class FavouritesViewController: UIViewController {
+    
+    // default type
+    private var currentType = BaseType.restaurant
     
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
@@ -63,14 +72,17 @@ class FavouritesViewController: UIViewController {
 
         alertController.addAction(UIAlertAction(title: "Restaurants", style: .default) { (_) in
             print("hey restaurant")
+            self.currentType = BaseType.restaurant
             })
             
         alertController.addAction(UIAlertAction(title: "Menus", style: .default) { (_) in
             print("hey menu")
+            self.currentType = BaseType.menu
         })
         
         alertController.addAction(UIAlertAction(title: "Food", style: .default) { (_) in
             print("hey food")
+            self.currentType = BaseType.food
         })
         
         alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
@@ -99,5 +111,15 @@ extension FavouritesViewController: UITableViewDataSource {
 }
 
 extension FavouritesViewController: UITableViewDelegate {
-    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        switch self.currentType {
+        case BaseType.restaurant:
+            let restaurantEndUserDetailViewController = RestaurantEndUserDetailViewController()
+            restaurantEndUserDetailViewController.restaurantIdentifier = self.restaurantIdentifiers[indexPath.row]
+            self.navigationController?.pushViewController(restaurantEndUserDetailViewController, animated: true)
+        default:
+            break
+        }
+    }
 }

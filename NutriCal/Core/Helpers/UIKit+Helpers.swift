@@ -137,6 +137,15 @@ extension UIView {
         NSLayoutConstraint.deactivate(constraints)
     }
 
+    public func fillToSuperview(_ subview: UIView) {
+        self.add(subview: subview) { (v, p) in [
+            v.topAnchor.constraint(equalTo: p.safeAreaLayoutGuide.topAnchor),
+            v.leadingAnchor.constraint(equalTo: p.safeAreaLayoutGuide.leadingAnchor),
+            v.trailingAnchor.constraint(equalTo: p.safeAreaLayoutGuide.trailingAnchor),
+            v.bottomAnchor.constraint(equalTo: p.safeAreaLayoutGuide.bottomAnchor)
+            ]}
+    }
+
     
     public func addSeparatorLine(color: UIColor) {
         let view = UIView()

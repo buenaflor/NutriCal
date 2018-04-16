@@ -13,6 +13,8 @@
 		346D80102080B5FD007FFAF4 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 346D800F2080B5FD007FFAF4 /* Localizable.strings */; };
 		346D80132080B7B5007FFAF4 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346D80122080B7B5007FFAF4 /* SettingsViewController.swift */; };
 		346D80162080BBD9007FFAF4 /* FavouritesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346D80152080BBD9007FFAF4 /* FavouritesViewController.swift */; };
+		346D801920848966007FFAF4 /* NutriCal.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 346D801720848966007FFAF4 /* NutriCal.xcdatamodeld */; };
+		346D801B208494B7007FFAF4 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346D801A208494B7007FFAF4 /* Constants.swift */; };
 		348DBBC3207B5A98001FD6F3 /* RestaurantEndUserDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348DBBC2207B5A98001FD6F3 /* RestaurantEndUserDetailViewController.swift */; };
 		348DBBC5207B698F001FD6F3 /* RestaurantEndUserDetailFoodCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348DBBC4207B698F001FD6F3 /* RestaurantEndUserDetailFoodCell.swift */; };
 		348DBBC7207B9924001FD6F3 /* RestaurantEndUserDetailSearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348DBBC6207B9924001FD6F3 /* RestaurantEndUserDetailSearchViewController.swift */; };
@@ -24,8 +26,8 @@
 		34ADA746206D7BA700C31D37 /* NutriCalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ADA745206D7BA700C31D37 /* NutriCalTests.swift */; };
 		34ADA751206D7BA700C31D37 /* NutriCalUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ADA750206D7BA700C31D37 /* NutriCalUITests.swift */; };
 		34ADA75F206D7CCC00C31D37 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ADA75E206D7CCC00C31D37 /* HomeViewController.swift */; };
-		34ADA761206D7E8800C31D37 /* UIColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ADA760206D7E8800C31D37 /* UIColors.swift */; };
-		34B8E471206E20790010ADDE /* UIKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B8E470206E20790010ADDE /* UIKit.swift */; };
+		34ADA761206D7E8800C31D37 /* UIColors+CustomColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ADA760206D7E8800C31D37 /* UIColors+CustomColors.swift */; };
+		34B8E471206E20790010ADDE /* UIKit+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B8E470206E20790010ADDE /* UIKit+Helpers.swift */; };
 		34B8E474206E215D0010ADDE /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 34B8E473206E215C0010ADDE /* GoogleService-Info.plist */; };
 		34B8E479206E23EA0010ADDE /* TableViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B8E478206E23EA0010ADDE /* TableViewModel.swift */; };
 		34B8E47D206E2C770010ADDE /* RestaurantMenuCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B8E47C206E2C770010ADDE /* RestaurantMenuCell.swift */; };
@@ -90,6 +92,8 @@
 		346D800F2080B5FD007FFAF4 /* Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = Localizable.strings; sourceTree = "<group>"; };
 		346D80122080B7B5007FFAF4 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		346D80152080BBD9007FFAF4 /* FavouritesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavouritesViewController.swift; sourceTree = "<group>"; };
+		346D801820848966007FFAF4 /* NutriCal.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = NutriCal.xcdatamodel; sourceTree = "<group>"; };
+		346D801A208494B7007FFAF4 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		348DBBC2207B5A98001FD6F3 /* RestaurantEndUserDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestaurantEndUserDetailViewController.swift; sourceTree = "<group>"; };
 		348DBBC4207B698F001FD6F3 /* RestaurantEndUserDetailFoodCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestaurantEndUserDetailFoodCell.swift; sourceTree = "<group>"; };
 		348DBBC6207B9924001FD6F3 /* RestaurantEndUserDetailSearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestaurantEndUserDetailSearchViewController.swift; sourceTree = "<group>"; };
@@ -107,8 +111,8 @@
 		34ADA750206D7BA700C31D37 /* NutriCalUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutriCalUITests.swift; sourceTree = "<group>"; };
 		34ADA752206D7BA700C31D37 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		34ADA75E206D7CCC00C31D37 /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
-		34ADA760206D7E8800C31D37 /* UIColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColors.swift; sourceTree = "<group>"; };
-		34B8E470206E20790010ADDE /* UIKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIKit.swift; sourceTree = "<group>"; };
+		34ADA760206D7E8800C31D37 /* UIColors+CustomColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColors+CustomColors.swift"; sourceTree = "<group>"; };
+		34B8E470206E20790010ADDE /* UIKit+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIKit+Helpers.swift"; sourceTree = "<group>"; };
 		34B8E473206E215C0010ADDE /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		34B8E478206E23EA0010ADDE /* TableViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewModel.swift; sourceTree = "<group>"; };
 		34B8E47C206E2C770010ADDE /* RestaurantMenuCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestaurantMenuCell.swift; sourceTree = "<group>"; };
@@ -276,9 +280,10 @@
 		34B8E46F206E20410010ADDE /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
-				34B8E470206E20790010ADDE /* UIKit.swift */,
-				34ADA760206D7E8800C31D37 /* UIColors.swift */,
+				34B8E470206E20790010ADDE /* UIKit+Helpers.swift */,
+				34ADA760206D7E8800C31D37 /* UIColors+CustomColors.swift */,
 				34C7BA24207F4AC50049D7B1 /* Date.swift */,
+				346D801A208494B7007FFAF4 /* Constants.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -290,6 +295,7 @@
 				34ADA739206D7BA700C31D37 /* LaunchScreen.storyboard */,
 				34ADA730206D7BA700C31D37 /* AppDelegate.swift */,
 				346D800F2080B5FD007FFAF4 /* Localizable.strings */,
+				346D801720848966007FFAF4 /* NutriCal.xcdatamodeld */,
 			);
 			path = "Supporting Files";
 			sourceTree = "<group>";
@@ -810,7 +816,7 @@
 				34B8E487206E56260010ADDE /* Restaurant.swift in Sources */,
 				34B8E47F206E4FEA0010ADDE /* DealOfTheMonthView.swift in Sources */,
 				348DBBC7207B9924001FD6F3 /* RestaurantEndUserDetailSearchViewController.swift in Sources */,
-				34B8E471206E20790010ADDE /* UIKit.swift in Sources */,
+				34B8E471206E20790010ADDE /* UIKit+Helpers.swift in Sources */,
 				34BAB2322071980A00E39E8B /* SignUpEndUserViewController.swift in Sources */,
 				34BAB21B206E629600E39E8B /* SideMenuViewController.swift in Sources */,
 				34B8E48B206E58510010ADDE /* FoodDetailViewController.swift in Sources */,
@@ -822,8 +828,9 @@
 				348DBBC3207B5A98001FD6F3 /* RestaurantEndUserDetailViewController.swift in Sources */,
 				34C5C84D2074E8A700498B6E /* BaseImagePickerViewController.swift in Sources */,
 				34BAB21F206E659600E39E8B /* LoginBaseViewController.swift in Sources */,
+				346D801920848966007FFAF4 /* NutriCal.xcdatamodeld in Sources */,
 				346D80132080B7B5007FFAF4 /* SettingsViewController.swift in Sources */,
-				34ADA761206D7E8800C31D37 /* UIColors.swift in Sources */,
+				34ADA761206D7E8800C31D37 /* UIColors+CustomColors.swift in Sources */,
 				34B8E481206E503D0010ADDE /* RestaurantMenuGalleryCell.swift in Sources */,
 				34BAB21D206E62CE00E39E8B /* LoginRestaurantViewController.swift in Sources */,
 				34C7BA2D207F66030049D7B1 /* LoginViewController.swift in Sources */,
@@ -852,6 +859,7 @@
 				34BAB23720719BB900E39E8B /* SideMenuCell.swift in Sources */,
 				34C5C84F2074F42C00498B6E /* AddMenuViewController.swift in Sources */,
 				34C5C85520754A9200498B6E /* AddFoodViewController.swift in Sources */,
+				346D801B208494B7007FFAF4 /* Constants.swift in Sources */,
 				34C7BA23207F38DB0049D7B1 /* CommentCell.swift in Sources */,
 				34C7BA27207F4CBF0049D7B1 /* TableViewCommentCell.swift in Sources */,
 			);
@@ -1145,6 +1153,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		346D801720848966007FFAF4 /* NutriCal.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				346D801820848966007FFAF4 /* NutriCal.xcdatamodel */,
+			);
+			currentVersion = 346D801820848966007FFAF4 /* NutriCal.xcdatamodel */;
+			path = NutriCal.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 34ADA725206D7BA700C31D37 /* Project object */;
 }

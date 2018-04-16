@@ -45,20 +45,15 @@ class HomeViewController: UIViewController {
         
         firebaseManager.fetchEndUserRestaurant { (restaurantIdentifiers) in
             restaurantIdentifiers.forEach({
-                self.restaurantIdentifiers.append($0)
+                if $0.restaurant.confirmation == "APPROVED" {
+                    self.restaurantIdentifiers.append($0)
+                }
+                else {
+                    SwiftSpinner.hide()
+                }
             })
             self.collectionView.reloadData()
         }
-        
-//        firebaseManager.fetchOwnerRestaurant { (restaurantIdentifiers) in
-//            self.restaurantIdentifiers = restaurantIdentifiers
-//
-//            self.collectionView.reloadData()
-//
-//            print(restaurantIdentifiers)
-//            print("reloaded")
-//        }
-        
         
         self.setupView()
     }
