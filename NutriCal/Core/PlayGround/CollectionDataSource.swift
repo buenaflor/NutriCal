@@ -27,8 +27,6 @@ where Cell: ConfigurableView, Provider.T == Cell.T {
     }
     
     func setUp() {
-        collectionView.dataSource = self
-        collectionView.delegate = self
     }
     
     public func numberOfSections(in collectionView: UICollectionView) -> Int {
