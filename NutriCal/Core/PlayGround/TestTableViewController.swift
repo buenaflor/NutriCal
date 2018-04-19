@@ -8,6 +8,29 @@
 
 import UIKit
 
+enum ServiceResponse<T> {
+    case success(T)
+    case failure(Error)
+}
+
+enum ApiPath: CustomStringConvertible {
+    case books
+    case categories
+    case booksForCategory(String)
+    
+    var description: String {
+        switch self {
+        case .books:
+            return "books/allBooks"
+        case .categories:
+            return "books/categories"
+        case .booksForCategory(let categoryId):
+            return "books/categories/\(categoryId)"
+        }
+    }
+}
+
+
 class MyModelCell: UITableViewCell {
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
