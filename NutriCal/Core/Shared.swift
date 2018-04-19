@@ -11,5 +11,3 @@ import Foundation
 protocol LoadingController {
     func loadData(force: Bool)
 }
-
-// some testing
