@@ -11,6 +11,7 @@ import UIKit
 import SideMenu
 import Firebase
 import SwiftSpinner
+import RangeSeekSlider
 
 enum SideMenuType: String {
     case login = "Login"
@@ -31,6 +32,33 @@ enum FilterOption {
     case location
     case rating
     case cuisine
+}
+
+extension FilterOption {
+    
+    var text: String {
+        switch self {
+        case .price:
+            return "€"
+        case .kCal:
+            return "kCal"
+        case .protein:
+            return "Protein"
+        case .carbs:
+            return "Carbs"
+        case .fats:
+            return "Fats"
+        case .location:
+            return "km"
+        case .rating:
+            return "Stars"
+        case .cuisine:
+            return "Cuisine"
+        }
+    }
+    
+    static let all: [FilterOption] = [ .price, .kCal, .fats, .location, .rating, .cuisine ]
+    
 }
 
 struct SideMenuHeader {
@@ -96,7 +124,7 @@ class SideMenuHeaderView: UIView {
 }
 
 protocol SideMenuViewControllerDelegate: class {
-    func sideMenuViewController(_ sideMenuViewController: SideMenuViewController, didChange slider: UISlider, filterOption: FilterOption)
+    func sideMenuViewController(_ sideMenuViewController: SideMenuViewController, didChange slider: RangeSeekSlider, filterOption: FilterOption)
 }
 
 class SideMenuViewController: UIViewController {
@@ -272,7 +300,7 @@ extension SideMenuViewController: UITableViewDelegate {
                 self.present(alertController, animated: true)
                 
             case SideMenuType.settings:
-                let settingsViewController = SettingsViewController()
+                let settingsViewController = SettingsViewController2()
                 self.navigationController?.pushViewController(settingsViewController, animated: true)
                 
             case SideMenuType.favourites:
@@ -289,7 +317,7 @@ extension SideMenuViewController: UITableViewDelegate {
 }
 
 extension SideMenuViewController: FilterCellDelegate {
-    func filterCell(_ filterCell: FilterCell, didChange slider: UISlider, filterOption: FilterOption) {
+    func filterCell(_ filterCell: FilterCell, didChange slider: RangeSeekSlider, filterOption: FilterOption) {
         self.delegate?.sideMenuViewController(self, didChange: slider, filterOption: filterOption)
     }
 }

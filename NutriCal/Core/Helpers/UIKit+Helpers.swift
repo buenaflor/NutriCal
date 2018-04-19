@@ -8,18 +8,50 @@
 
 import UIKit
 import MapKit
+import RangeSeekSlider
+
 
 // - MARK: UICollectionView
 
-protocol ReusableView: class {
+public protocol Configurable {
+    associatedtype T
+    var model: T? { get set }
+    func configureWithModel(_: T)
+}
+
+public protocol ReusableView: class {
     static var defaultReuseIdentifier: String { get }
 }
 
-extension ReusableView where Self: UIView {
+public extension ReusableView where Self: UIView {
     static var defaultReuseIdentifier: String {
         return NSStringFromClass(self)
     }
 }
+
+public protocol ConfigurableView: ReusableView {
+    associatedtype T
+    
+    func configure(_ item: T, at indexPath: IndexPath)
+}
+
+public protocol ConfigurableCell {
+    associatedtype DataType
+    func configure(data: DataType)
+}
+
+// Unused
+public protocol CollectionDataProvider {
+    associatedtype T
+    
+    func numberOfSections() -> Int
+    func numberOfItems(in section: Int) -> Int
+    func item(at indexPath: IndexPath) -> T?
+    
+    func updateItem(at indexPath: IndexPath, value: T)
+}
+
+
 extension UICollectionViewCell: ReusableView { }
 extension UICollectionView {
     
@@ -57,7 +89,7 @@ extension UITableView {
 
 extension Collection {
     
-    /// Returns the element at the specified index iff it is within bounds, otherwise nil.
+    /// Returns the element at the specified index if it is within bounds, otherwise nil.
     subscript (safe index: Index) -> Element? {
         return indices.contains(index) ? self[index] : nil
     }
@@ -164,6 +196,19 @@ extension UISearchBar {
         if let textField = getSearchBarTextField() {
             textField.attributedPlaceholder = NSAttributedString(string: self.placeholder != nil ? self.placeholder! : "", attributes: [NSAttributedStringKey.foregroundColor: color])
         }
+    }
+}
+
+extension RangeSeekSlider {
+
+    /// Rounds the selected slider min value to an Int
+    var roundedSelectedMinValue: Int {
+        return Int(self.selectedMinValue)
+    }
+    
+    /// Rounds the selected slider max value to an Int
+    var roundedSelectedMaxValue: Int {
+        return Int(self.selectedMaxValue)
     }
 }
 

@@ -107,7 +107,28 @@ extension SettingsViewController: UITableViewDelegate {
         
         switch setting {
         case SettingType.resetFavourite:
-            print("")
+            let firebaseManager = FirebaseManager()
+            
+            let alertController = UIAlertController(title: "Delete", message: "Would you like to delete all favourites?", preferredStyle: .alert)
+            
+            alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+            alertController.addAction(UIAlertAction(title: "Delete All", style: .default, handler: { _ in
+                firebaseManager.fetchFavourites2 { (restaurantIDs) in
+                    firebaseManager.fetchRestaurantsWith(restaurantIDs: restaurantIDs, completion: { (restaurantIdentifiers) in
+                        firebaseManager.deleteFavourites(restaurantIdentifiers: restaurantIdentifiers, completion: {
+                            let alertController = UIAlertController(title: "Success", message: "Successfully deleted all favourites", preferredStyle: .alert)
+                            
+                            alertController.addAction(UIAlertAction(title: "Done", style: .default, handler: nil))
+                            
+                            self.present(alertController, animated: true, completion: nil)
+                        })
+                    })
+                }
+            }))
+            
+            self.present(alertController, animated: true, completion: nil)
+            
+            
         case SettingType.appTutorial:
             let onBoardingViewController = OnBoardingViewController()
             let navController = UINavigationController(rootViewController: onBoardingViewController)

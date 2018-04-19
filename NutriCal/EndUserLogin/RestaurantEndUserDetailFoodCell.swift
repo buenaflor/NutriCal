@@ -21,6 +21,8 @@ class RestaurantEndUserDetailFoodCell: UITableViewCell {
         didSet {
             guard let food = dataSource as? Food else { return }
             
+            self.setOpaqueBackground()
+            
             self.foodNameLabel.text = food.name
             self.descriptionLabel.text = food.description
             self.kCalLabel.text = "\(food.kCal) kCal"
@@ -115,3 +117,13 @@ class RestaurantEndUserDetailFoodCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 }
+
+private extension RestaurantEndUserDetailFoodCell {
+    static let defaultBackgroundColor = UIColor.groupTableViewBackground
+    
+    func setOpaqueBackground() {
+        alpha = 1.0
+        backgroundColor = RestaurantEndUserDetailFoodCell.defaultBackgroundColor
+    }
+}
+

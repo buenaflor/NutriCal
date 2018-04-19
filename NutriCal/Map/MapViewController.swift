@@ -34,7 +34,11 @@ final class Annotation: NSObject, MKAnnotation {
     }
 }
 
-class MapViewController: UIViewController {
+class MapViewController: UIViewController, LoadingController {
+    
+    func loadData(force: Bool) {
+        print("loading in map")
+    }
     
     private var locationManager: CLLocationManager!
     

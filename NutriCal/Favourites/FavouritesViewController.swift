@@ -16,6 +16,20 @@ enum BaseType {
     case food
 }
 
+extension BaseType {
+    
+    var cellType: UITableViewCell.Type {
+        switch self {
+        case .food:
+            return RestaurantEndUserDetailFoodCell.self
+        case .restaurant:
+            return ManageRestaurantCell.self
+        case .menu:
+            return UITableViewCell.self
+        }
+    }
+}
+
 class FavouritesViewController: UIViewController {
     
     // default type
@@ -40,10 +54,13 @@ class FavouritesViewController: UIViewController {
         
         let firebaseManager = FirebaseManager()
         
-        firebaseManager.fetchFavourites { (restaurantIdentifiers) in
-            self.restaurantIdentifiers = restaurantIdentifiers
-            self.tableView.reloadData()
-            SwiftSpinner.hide()
+        firebaseManager.fetchFavourites2 { (restaurantIDs) in
+            print(restaurantIDs)
+            firebaseManager.fetchRestaurantsWith(restaurantIDs: restaurantIDs, completion: { (restaurantIdentifiers) in
+                print(restaurantIdentifiers)
+                self.restaurantIdentifiers = restaurantIdentifiers
+                self.tableView.reloadData()
+            })
         }
     }
     
@@ -54,7 +71,24 @@ class FavouritesViewController: UIViewController {
         let chooseFavouriteRightBarButton = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(chooseFavouriteRightBarButtonTapped))
         self.navigationItem.rightBarButtonItem = chooseFavouriteRightBarButton
         
+        self.navigationItem.leftBarButtonItem = editButtonItem
+        
         self.configureConstraints()
+    }
+    
+    override func setEditing(_ editing: Bool, animated: Bool) {
+        super.setEditing(editing, animated: animated)
+        
+        let myTest = RealmTest()
+        myTest.read()
+        
+        
+        tableView.setEditing(editing, animated: animated)
+        refreshTableView(animated: animated)
+    }
+    
+    func refreshTableView(animated: Bool) {
+        self.tableView.reloadSections(IndexSet(integer: 0), with: animated ? .automatic : .none)
     }
     
     private func configureConstraints() {
@@ -71,22 +105,22 @@ class FavouritesViewController: UIViewController {
         let alertController = UIAlertController(title: "Favourite", message: "This is my message", preferredStyle: .actionSheet)
 
         alertController.addAction(UIAlertAction(title: "Restaurants", style: .default) { (_) in
-            print("hey restaurant")
             self.currentType = BaseType.restaurant
-            })
-            
+            self.tableView.reloadData()
+        })
+        
         alertController.addAction(UIAlertAction(title: "Menus", style: .default) { (_) in
-            print("hey menu")
             self.currentType = BaseType.menu
+            self.tableView.reloadData()
         })
         
         alertController.addAction(UIAlertAction(title: "Food", style: .default) { (_) in
-            print("hey food")
             self.currentType = BaseType.food
+            self.tableView.reloadData()
         })
         
         alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-    
+        
         self.present(alertController, animated: true, completion: nil)
     }
 }
@@ -94,19 +128,60 @@ class FavouritesViewController: UIViewController {
 extension FavouritesViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.restaurantIdentifiers.count
+        switch currentType {
+        case .restaurant:
+            return self.restaurantIdentifiers.count
+        case .menu:
+            return 10
+        case .food:
+            return 30
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(ManageRestaurantCell.self, forIndexPath: indexPath)
-        
-        cell.dataSource = self.restaurantIdentifiers[indexPath.row]
-        
-        return cell
+
+        switch currentType {
+        case .restaurant:
+            let cell = tableView.dequeueReusableCell(ManageRestaurantCell.self, forIndexPath: indexPath)
+            cell.dataSource = self.restaurantIdentifiers[indexPath.row]
+            return cell
+        case .menu:
+            let cell = tableView.dequeueReusableCell(UITableViewCell.self, forIndexPath: indexPath)
+            cell.textLabel?.text = "he"
+            return cell
+        case .food:
+            let cell = tableView.dequeueReusableCell(RestaurantEndUserDetailFoodCell.self, forIndexPath: indexPath)
+            cell.priceButton.row = indexPath.row
+            cell.priceButton.section = indexPath.section
+            cell.dataSource = Food(name: "My Food", description: "Best Food", isVegan: true, ingredients: ["Salad", "Tomato"], kCal: 300, price: 8.99, imageLink: "")
+            return cell
+        }
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 150
+        
+        switch currentType {
+        case .restaurant:
+            return 150
+        case .menu:
+            return 70
+        case .food:
+            return 70
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if (editingStyle == .delete) {
+            let firebaseManager = FirebaseManager()
+            firebaseManager.deleteFavourite(documentIdentifier: self.restaurantIdentifiers[indexPath.row].documentIdentifier) {
+                self.restaurantIdentifiers.remove(at: indexPath.row)
+                self.tableView.deleteRows(at: [indexPath], with: .automatic)
+            }
+        }
     }
 }
 

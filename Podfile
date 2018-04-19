@@ -18,6 +18,7 @@ target 'NutriCal' do
   pod 'AMPopTip'
   pod 'Cosmos', '~> 15.0'
   pod 'KUIPopOver'
+  pod 'RealmSwift'
 
   target 'NutriCalTests' do
     inherit! :search_paths

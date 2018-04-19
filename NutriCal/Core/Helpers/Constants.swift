@@ -11,5 +11,6 @@ import Foundation
 class Constant {
     struct DefaultKey {
         static let showVegan = "ShowVegan"
+        static let selectedThemeKey = "SelectedTheme"
     }
 }

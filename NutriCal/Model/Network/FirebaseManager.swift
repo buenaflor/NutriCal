@@ -79,6 +79,48 @@ class FirebaseManager {
         }
     }
     
+    func fetchRestaurantsWith(restaurantIDs: [String], completion: @escaping (([RestaurantIdentifier]) -> Void)) {
+        let ownerRef = self.db
+            .collection("restaurantOwner")
+        
+        ownerRef.getDocuments { (querySnapshot, err) in
+            if let err = err {
+                print("Error getting documents: \(err)")
+            } else {
+                querySnapshot?.documents.forEach({ (document) in
+                    let restaurantRef = ownerRef.document(document.documentID).collection("restaurants")
+                    
+                    restaurantRef.getDocuments(completion: { (querySnapshot, err) in
+                        if let err = err {
+                            print("Error getting documents: \(err)")
+                        } else {
+                            var restaurantIdentifiers = [RestaurantIdentifier]()
+                            var documents = [QueryDocumentSnapshot]()
+                            var count = 0
+                            querySnapshot?.documents.forEach({
+                                if restaurantIDs.contains($0.documentID) {
+                                    documents.append($0)
+                                }
+                            })
+                            
+                            let restaurants = documents.compactMap({
+                                $0.data().flatMap({ (data) in
+                                    return Restaurant(dictionary: data)
+                                })
+                            })
+                            
+                            documents.forEach({ (document) in
+                                restaurantIdentifiers.append(RestaurantIdentifier(restaurant: restaurants[count], documentIdentifier: document.documentID))
+                                count = count + 1
+                            })
+                            completion(restaurantIdentifiers)
+                        }
+                    })
+                })
+            }
+        }
+    }
+    
     func fetchEndUserRestaurant(completion: @escaping ([RestaurantIdentifier]) -> Void) {
         let ownerRef = self.db
             .collection("restaurantOwner")
@@ -88,6 +130,7 @@ class FirebaseManager {
                 print("Error getting documents: \(err)")
             } else {
                 querySnapshot?.documents.forEach({ (document) in
+                    
                     let restaurantRef = ownerRef.document(document.documentID).collection("restaurants")
                     
                     restaurantRef.getDocuments(completion: { (querySnapshot, err) in
@@ -346,30 +389,47 @@ class FirebaseManager {
         }
     }
     
-    func fetchFavourites(completion: @escaping ([RestaurantIdentifier]) -> Void) {
+    func fetchFavourites2(completion: @escaping (_ restaurantIDs: [String]) -> Void) {
         guard let userID = Auth.auth().currentUser?.uid else { return }
         let ref = self.db.collection("users").document(userID).collection("favourites")
         
+        var restaurantIDs = [String]()
         ref.getDocuments { (querySnapshot, err) in
             if let err = err {
                 print("Error getting documents: \(err)")
             } else {
-                var restaurantIdentifiers = [RestaurantIdentifier]()
-                var count = 0
-                if let restaurants = querySnapshot?.documents.compactMap({
-                    $0.data().flatMap({ (data) in
-                        return Restaurant(dictionary: data)
-                    })
-                }) {
-                    querySnapshot?.documents.forEach({ (document) in
-                        restaurantIdentifiers.append(RestaurantIdentifier(restaurant: restaurants[count], documentIdentifier: document.documentID))
-                        count = count + 1
-                    })
-                    completion(restaurantIdentifiers)
-                }
+                querySnapshot?.documents.forEach({
+                    restaurantIDs.append($0.documentID)
+                })
+                completion(restaurantIDs)
             }
         }
     }
+    
+//    func fetchFavourites(completion: @escaping ([RestaurantIdentifier]) -> Void) {
+//        guard let userID = Auth.auth().currentUser?.uid else { return }
+//        let ref = self.db.collection("users").document(userID).collection("favourites")
+//
+//        ref.getDocuments { (querySnapshot, err) in
+//            if let err = err {
+//                print("Error getting documents: \(err)")
+//            } else {
+//                var restaurantIdentifiers = [RestaurantIdentifier]()
+//                var count = 0
+//                if let restaurants = querySnapshot?.documents.compactMap({
+//                    $0.data().flatMap({ (data) in
+//                        return Restaurant(dictionary: data)
+//                    })
+//                }) {
+//                    querySnapshot?.documents.forEach({ (document) in
+//                        restaurantIdentifiers.append(RestaurantIdentifier(restaurant: restaurants[count], documentIdentifier: document.documentID))
+//                        count = count + 1
+//                    })
+//                    completion(restaurantIdentifiers)
+//                }
+//            }
+//        }
+//    }
     
     func fetchReviews(from restaurantIdentifier: RestaurantIdentifier, completion: @escaping (([Review]) -> Void)) {
 
@@ -419,6 +479,32 @@ class FirebaseManager {
             }
             else {
                 completion(0)
+            }
+        }
+    }
+    
+    func deleteFavourites(restaurantIdentifiers: [RestaurantIdentifier], completion: @escaping (() -> Void)) {
+        guard let userID = Auth.auth().currentUser?.uid else { return }
+        restaurantIdentifiers.forEach { (restaurantIdentifier) in
+            db.collection("users").document(userID).collection("favourites").document(restaurantIdentifier.documentIdentifier).delete() { err in
+                if let err = err {
+                    print("Error removing document: \(err)")
+                } else {
+                    print("Document successfully removed!")
+                    completion()
+                }
+            }
+        }
+    }
+    
+    func deleteFavourite(documentIdentifier: String, completion: @escaping () -> Void) {
+        guard let userID = Auth.auth().currentUser?.uid else { return }
+        db.collection("users").document(userID).collection("favourites").document(documentIdentifier).delete() { err in
+            if let err = err {
+                print("Error removing document: \(err)")
+            } else {
+                print("Document successfully removed!")
+                completion()
             }
         }
     }

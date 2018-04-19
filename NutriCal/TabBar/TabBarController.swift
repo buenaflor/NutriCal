@@ -9,19 +9,27 @@
 import UIKit
 
 class TabBarController: UITabBarController {
-
+    
+    lazy var home: HomeViewController = HomeViewController()
+    lazy var homeNav: UINavigationController = {
+        let vc = UINavigationController(rootViewController: self.home)
+        vc.tabBarItem.image = #imageLiteral(resourceName: "home-transparent")
+        vc.title = "Home"
+        return vc
+    }()
+    
+    lazy var map: MapViewController = MapViewController()
+    lazy var mapNav: UINavigationController = {
+        let vc = UINavigationController(rootViewController: self.map)
+        vc.tabBarItem.image = #imageLiteral(resourceName: "map")
+        vc.title = "Map"
+        return vc
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let homeViewController = HomeViewController()
-        let homeViewNavController = UINavigationController(rootViewController: homeViewController)
-        homeViewController.tabBarItem = UITabBarItem(title: "Home", image: #imageLiteral(resourceName: "home-transparent"), tag: 0)
-        
-        let mapViewController = MapViewController()
-        let mapNavController = UINavigationController(rootViewController: mapViewController)
-        mapViewController.tabBarItem = UITabBarItem(title: "Map", image: #imageLiteral(resourceName: "map"), tag: 1)
-        
-        viewControllers = [homeViewNavController, mapNavController]
+        viewControllers = [ homeNav, mapNav ]
     }
 }
 

@@ -11,8 +11,42 @@ import UIKit
 import SideMenu
 import SwiftSpinner
 import KUIPopOver
+import RangeSeekSlider
 
-class HomeViewController: UIViewController {
+enum FoodType {
+    case chinese, thai, american, german
+}
+
+extension FoodType: SelectionItem {
+    var text: String {
+        switch self {
+        case .american:
+            return "American"
+        case .chinese:
+            return "Chinese"
+        case .german:
+            return "German"
+        case .thai:
+            return "Thai"
+        }
+    }
+    
+    static let all: [FoodType] = [ .american, .chinese, .german, .thai ]
+}
+
+class HomeViewController: UIViewController, LoadingController {
+    
+    var foodType: FoodType = .american {
+        didSet {
+            print("hello american")
+        }
+    }
+    
+    func loadData(force: Bool) {
+        print("loading in home")
+    }
+    
+    private var isFiltered = false
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -32,6 +66,7 @@ class HomeViewController: UIViewController {
     private var internalRestaurants = [InternalRestaurant]()
     
     private var restaurantIdentifiers = [RestaurantIdentifier]()
+    private lazy var filteredRestaurantIdentifiers = restaurantIdentifiers
     
     private var menus = [InternalMenu]()
     
@@ -79,6 +114,27 @@ class HomeViewController: UIViewController {
     }
     
     private func createNavigationItems() {
+        let filterSelectorButton = FilterSelectorButton()
+        filterSelectorButton.onTap = { [weak self] in
+            let filterViewController = FilterViewController()
+            filterViewController.preferredContentSize = CGSize(width: 300, height: 300)
+            filterViewController.delegate = self
+            let navController = UINavigationController(rootViewController: filterViewController)
+
+            navController.modalPresentationStyle = .popover
+            let popController = navController.popoverPresentationController
+            popController?.permittedArrowDirections = .any
+            popController?.delegate = self
+            popController?.sourceRect = filterSelectorButton.bounds
+            popController?.sourceView = filterSelectorButton
+            self?.present(navController, animated: true, completion: nil)
+        }
+        
+        navigationItem.titleView = filterSelectorButton
+        
+        let rightMenuNavigationItem = UIBarButtonItem(image: #imageLiteral(resourceName: "exit"), style: .plain, target: self, action: #selector(rightMenuNavigationItemTapped(sender:)))
+        navigationItem.rightBarButtonItem = rightMenuNavigationItem
+        
         let leftMenuNavigationItem = UIBarButtonItem(image: #imageLiteral(resourceName: "burger-menu"), style: .plain, target: self, action: #selector(leftMenuNavigationItemTapped))
         navigationItem.leftBarButtonItem = leftMenuNavigationItem
     }
@@ -97,6 +153,34 @@ class HomeViewController: UIViewController {
     @objc private func leftMenuNavigationItemTapped() {
         present(SideMenuManager.default.menuLeftNavigationController!, animated: true, completion: nil)
     }
+    
+    @objc private func rightMenuNavigationItemTapped(sender: UIBarButtonItem) {
+        let selectionViewController: SelectionViewController<FoodType> = SelectionViewController(items: FoodType.all)
+        selectionViewController.preferredContentSize = CGSize(width: 180, height: 0)
+        selectionViewController.selectedItem = foodType
+        selectionViewController.didSelect = { [weak self] item in
+            self?.dismiss(animated: true, completion: nil)
+            self?.foodTypeSelected(item: item)
+            return true
+        }
+        
+        let popoverPresentationController = selectionViewController.popoverPresentationController
+        popoverPresentationController?.delegate = self
+        popoverPresentationController?.permittedArrowDirections = UIPopoverArrowDirection.up
+        popoverPresentationController?.barButtonItem = sender
+    
+        present(selectionViewController, animated: true, completion: nil)
+    }
+    
+    private func foodTypeSelected(item: FoodType) {
+        self.foodType = item
+    }
+}
+
+extension HomeViewController: UIPopoverPresentationControllerDelegate {
+    func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
+        return .none
+    }
 }
 
 extension HomeViewController: UICollectionViewDataSource {
@@ -114,6 +198,7 @@ extension HomeViewController: UICollectionViewDataSource {
         let cell = collectionView.dequeueReusableCell(RestaurantMenuCell.self, forIndexPath: indexPath)
         
         cell.dataSource = self.restaurantIdentifiers[indexPath.row]
+        cell.configure(data: self.restaurantIdentifiers[indexPath.row])
         cell.delegate = self
         
         return cell
@@ -178,11 +263,24 @@ extension HomeViewController: CustomPopOverViewDelegate {
         }
     }
 }
+extension Notification.Name {
+    static let filterMenu = Notification.Name(
+        rawValue: "filterMenu")
+}
 
-extension HomeViewController: SideMenuViewControllerDelegate {
-    func sideMenuViewController(_ sideMenuViewController: SideMenuViewController, didChange slider: UISlider, filterOption: FilterOption) {
-        print(Int(slider.value * 10))
-        self.collectionView.reloadData()
+extension HomeViewController: SideMenuViewControllerDelegate, FilterViewControllerDelegate {
+    
+    func filterViewController(_ filterViewController: FilterViewController, didApply filterItems: [FilterItem]) {
+        
+        filterItems.forEach { (item) in
+            print(item.option, item.selectedMaxvalue, item.selectedMinValue)
+        }
+        
+        NotificationCenter.default.post(name: .filterMenu, object: filterItems)
+    }
+
+    func sideMenuViewController(_ sideMenuViewController: SideMenuViewController, didChange slider: RangeSeekSlider, filterOption: FilterOption) {
+        // Throw away?
     }
 }
 
@@ -249,6 +347,7 @@ class CustomPopOverView: UIView, KUIPopOverUsable {
 }
 
 extension CustomPopOverView: UITableViewDataSource {
+
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.settings.count

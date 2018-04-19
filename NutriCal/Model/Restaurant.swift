@@ -6,7 +6,7 @@
 //  Copyright © 2018 Giancarlo. All rights reserved.
 //
 
-import Foundation
+import UIKit
 import FirebaseFirestore
 
 protocol DocumentSerializable {
@@ -14,6 +14,7 @@ protocol DocumentSerializable {
 }
 
 struct RestaurantIdentifier {
+    
     let restaurant: Restaurant
     let documentIdentifier: String
 }

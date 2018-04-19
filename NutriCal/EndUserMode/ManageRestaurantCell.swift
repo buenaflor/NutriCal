@@ -10,8 +10,49 @@ import UIKit
 
 import SDWebImage
 import Cosmos
+import SwiftSpinner
 
-class ManageRestaurantCell: UITableViewCell {
+class ManageRestaurantCell: UITableViewCell, Configurable {
+
+    var model: RestaurantIdentifier?
+    
+    func configureWithModel(_: RestaurantIdentifier) {
+        guard let restaurantIdentifier = model else { return }
+        if let imgURL = URL(string: restaurantIdentifier.restaurant.imageFilePath) {
+            self.restaurantLogoImageView.sd_setImage(with: imgURL)
+        }
+        else {
+            self.restaurantLogoImageView.image = #imageLiteral(resourceName: "pexels-photo-696218")
+        }
+        
+        switch restaurantIdentifier.restaurant.confirmation {
+        case ConfirmationState.pending.rawValue:
+            self.statusCodeLabel.text = "Status: Pending"
+            self.statusCodeLabel.textColor = #colorLiteral(red: 0.9607843161, green: 0.7058823705, blue: 0.200000003, alpha: 1)
+        case ConfirmationState.denied.rawValue:
+            self.statusCodeLabel.text = "Status: Denied"
+            self.statusCodeLabel.textColor = .red
+        case ConfirmationState.confirmed.rawValue:
+            self.statusCodeLabel.text = "Status: Approved"
+            self.statusCodeLabel.textColor = #colorLiteral(red: 0.3411764801, green: 0.6235294342, blue: 0.1686274558, alpha: 1)
+        default:
+            break;
+        }
+        
+        let firebaseManager = FirebaseManager()
+        
+        firebaseManager.calculateAverageRating(from: restaurantIdentifier) { (rating) in
+            self.cosmosView.rating = rating
+            SwiftSpinner.hide()
+        }
+        
+        self.restaurantNameLabel.text = restaurantIdentifier.restaurant.name
+        
+        let street = restaurantIdentifier.restaurant.street
+        let postalCode = restaurantIdentifier.restaurant.postalCode
+        let city = restaurantIdentifier.restaurant.city
+        self.addressLabel.text = "\(street), \(postalCode) \(city)"
+    }
     
     var dataSource: Any? {
         didSet {
@@ -42,6 +83,7 @@ class ManageRestaurantCell: UITableViewCell {
             
             firebaseManager.calculateAverageRating(from: restaurantIdentifier) { (rating) in
                 self.cosmosView.rating = rating
+                SwiftSpinner.hide()
             }
             
             self.restaurantNameLabel.text = restaurantIdentifier.restaurant.name

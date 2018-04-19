@@ -15,11 +15,15 @@ protocol RestaurantMenuCellDelegate: class {
     func restaurantMenuCell(_ restaurantMenuCell: RestaurantMenuCell, didClick button: UIButton)
 }
 
-class RestaurantMenuCell: UICollectionViewCell {
+class RestaurantMenuCell: UICollectionViewCell, ConfigurableCell {
+    
+    func configure(data restaurantIdentifier: RestaurantIdentifier) {
+        print(restaurantIdentifier.restaurant.name)
+    }
+    
     
     var dataSource: Any? {
         didSet {
-            print("sup identifier")
             guard let restaurantIdentifier = dataSource as? RestaurantIdentifier else { return }
             
             self.restaurantView.dataSource = restaurantIdentifier
@@ -37,6 +41,12 @@ class RestaurantMenuCell: UICollectionViewCell {
                     })
                 }
             }
+            
+            let notificationCenter = NotificationCenter.default
+            notificationCenter.addObserver(self,
+                                           selector: #selector(receiveFilterMenu(notification:)),
+                                           name: .filterMenu,
+                                           object: nil)
         }
     }
     
@@ -114,8 +124,19 @@ class RestaurantMenuCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    @objc func test() {
-        print("test")
+    @objc func receiveFilterMenu(notification: Notification) {
+        guard let filterItems = notification.object as? [FilterItem] else { return }
+        print("notification bro")
+        filterItems.forEach({ (filterItem) in
+            internalMenus.forEach({ (internalMenu) in
+                if filterItem.option == .price {
+                    print(internalMenu.menu.lowerPriceRange)
+                    if Int(internalMenu.menu.lowerPriceRange) < filterItem.selectedMinValue || Int(internalMenu.menu.higherPiceRange) > filterItem.selectedMaxvalue {
+                        print("prices not in filter")
+                    }
+                }
+            })
+        })
     }
 }
 

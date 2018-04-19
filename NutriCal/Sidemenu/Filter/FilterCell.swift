@@ -7,9 +7,10 @@
 //
 
 import UIKit
+import RangeSeekSlider
 
 protocol FilterCellDelegate: class {
-    func filterCell(_ filterCell: FilterCell, didChange slider: UISlider, filterOption: FilterOption)
+    func filterCell(_ filterCell: FilterCell, didChange slider: RangeSeekSlider, filterOption: FilterOption)
 }
 
 class FilterCell: UITableViewCell {
@@ -21,46 +22,34 @@ class FilterCell: UITableViewCell {
             guard let filterOption = filterOption else { return }
             
             switch filterOption {
-            case FilterOption.carbs:
-                self.lowerFilterLabel.text = "0 Carbs"
-                self.higherFilterLabel.text = "400 Carbs"
-                self.setSliderValues(min: 0, max: 400)
-            case FilterOption.protein:
-                self.lowerFilterLabel.text = "0 Protein"
-                self.higherFilterLabel.text = "100 Carbs"
-                self.setSliderValues(min: 0, max: 100)
-            case FilterOption.price:
-                self.lowerFilterLabel.text = "0€"
-                self.higherFilterLabel.text = "30€"
-                self.setSliderValues(min: 0, max: 30)
-            case FilterOption.kCal:
-                self.lowerFilterLabel.text = "0 kCal"
-                self.higherFilterLabel.text = "1000 kCal"
-                self.setSliderValues(min: 0, max: 1000)
-            case FilterOption.location:
-                self.lowerFilterLabel.text = "Within 0km"
-                self.higherFilterLabel.text = "Within 2km"
-                self.setSliderValues(min: 0, max: 2)
-            case FilterOption.rating:
-                self.lowerFilterLabel.text = "0 Stars"
-                self.higherFilterLabel.text = "5 Stars"
-                self.setSliderValues(min: 0, max: 0.5)
-            case FilterOption.fats:
-                self.lowerFilterLabel.text = "0 Fats"
-                self.higherFilterLabel.text = "100 Fats"
-                self.setSliderValues(min: 0, max: 100)
+            case .carbs:
+                self.setSliderValues(min: 0, max: 100, filterOption: .carbs)
+            case .protein:
+                self.setSliderValues(min: 0, max: 100, filterOption: .protein)
+            case .price:
+                self.setSliderValues(min: 0, max: 30, filterOption: .price)
+            case .kCal:
+                self.setSliderValues(min: 0, max: 1000, filterOption: .kCal)
+            case .location:
+                self.setSliderValues(min: 0, max: 2, filterOption: .location)
+            case .rating:
+                self.setSliderValues(min: 0, max: 5, filterOption: .rating)
+            case .fats:
+                self.setSliderValues(min: 0, max: 100, filterOption: .fats)
             case FilterOption.cuisine:
                 print("")
             }
             
-            self.volumeSlider.addTarget(self, action: #selector(volumeSliderChanged(sender:)), for: [.touchUpInside, .touchUpOutside])
+            self.volumeSlider.addTarget(self, action: #selector(volumeSliderChanged(sender:)), for: .allTouchEvents)
         }
     }
     
-    private let volumeSlider: UISlider = {
-        let slider = UISlider()
-        slider.setThumbImage(#imageLiteral(resourceName: "circle-filled").withRenderingMode(.alwaysTemplate), for: .normal)
-        slider.tintColor = UIColor.StandardMode.SideMenuHeaderView
+    let volumeSlider: RangeSeekSlider = {
+        let slider = RangeSeekSlider()
+        slider.hideLabels = true
+        slider.tintColor = .gray
+        slider.colorBetweenHandles = UIColor.StandardMode.TabBarColor
+        slider.handleColor = UIColor.StandardMode.TabBarColor
         return slider
     }()
     
@@ -102,17 +91,26 @@ class FilterCell: UITableViewCell {
             ]}
     }
     
-    private func setSliderValues(min: Float, max: Float) {
-        self.volumeSlider.minimumValue = min
-        self.volumeSlider.maximumValue = max
+    private func setSliderValues(min: CGFloat, max: CGFloat, filterOption: FilterOption) {
+        self.volumeSlider.minValue = min
+        self.volumeSlider.maxValue = max
+        
+        self.volumeSlider.selectedMaxValue = max
+        self.volumeSlider.selectedMinValue = min
+        
+        self.lowerFilterLabel.text = "\(Int(min)) \(filterOption.text)"
+        self.higherFilterLabel.text = "\(Int(max)) \(filterOption.text)"
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    @objc private func volumeSliderChanged(sender: UISlider) {
+    @objc private func volumeSliderChanged(sender: RangeSeekSlider) {
         guard let filterOption = filterOption else { return }
         self.delegate?.filterCell(self, didChange: sender, filterOption: filterOption)
+        
+        self.lowerFilterLabel.text = "\(Int(sender.selectedMinValue)) \(filterOption.text)"
+        self.higherFilterLabel.text = "\(Int(sender.selectedMaxValue)) \(filterOption.text)"
     }
 }
