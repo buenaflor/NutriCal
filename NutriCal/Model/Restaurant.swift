@@ -14,7 +14,6 @@ protocol DocumentSerializable {
 }
 
 struct RestaurantIdentifier {
-    
     let restaurant: Restaurant
     let documentIdentifier: String
 }

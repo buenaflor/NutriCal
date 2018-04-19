@@ -23,10 +23,6 @@ class Person: Object {
 class RealmTest {
     
     let realm = try! Realm()
-
-    func delete() {
-        
-    }
     
     func read() {
         let puppy = realm.objects(Dog.self)
