@@ -16,12 +16,16 @@ class RestaurantDetailView: UIView, Configurable {
     func configureWithModel(_: RestaurantIdentifier) {
         guard let restaurantIdentifier = model else { return }
         
-        
+        let firebaseManager = FirebaseManager()
+        firebaseManager.calculateAverageRating(from: restaurantIdentifier) { (rating) in
+            self.nameLabel.text = restaurantIdentifier.restaurant.name
+            self.cosmosView.rating = rating
+        }
     }
     
     private let nameLabel: UILabel = {
         let lbl = UILabel()
-        lbl.font = UIFont(name: "Futura", size: 22.0)
+        lbl.font = UIFont(name: "Futura", size: 30.0)
         lbl.numberOfLines = 0
         lbl.lineBreakMode = .byWordWrapping
         return lbl
@@ -30,7 +34,7 @@ class RestaurantDetailView: UIView, Configurable {
     private let cosmosView: CosmosView = {
         let view = CosmosView()
         view.settings.fillMode = .precise
-        view.settings.starSize = 30
+        view.settings.starSize = 20
         view.isUserInteractionEnabled = false
         return view
     }()
@@ -38,6 +42,7 @@ class RestaurantDetailView: UIView, Configurable {
     private let favouriteButton: UIButton = {
         let btn = UIButton()
         btn.setImage(#imageLiteral(resourceName: "heart").withRenderingMode(.alwaysTemplate), for: .normal)
+        btn.tintColor = .gray
         btn.addTarget(self, action: #selector(favouriteButtonTapped), for: .touchUpInside)
         return btn
     }()
@@ -45,22 +50,24 @@ class RestaurantDetailView: UIView, Configurable {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
+        backgroundColor = .white
+        
         add(subview: nameLabel) { (v, p) in [
-            v.topAnchor.constraint(equalTo: p.topAnchor),
-            v.leadingAnchor.constraint(equalTo: p.leadingAnchor, constant: 15),
+            v.topAnchor.constraint(equalTo: p.topAnchor, constant: 25),
+            v.leadingAnchor.constraint(equalTo: p.leadingAnchor, constant: 23),
             v.trailingAnchor.constraint(equalTo: p.trailingAnchor, constant: -15)
             ]}
         
         add(subview: cosmosView) { (v, p) in [
             v.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 5),
-            v.leadingAnchor.constraint(equalTo: p.leadingAnchor, constant: 15)
+            v.leadingAnchor.constraint(equalTo: p.leadingAnchor, constant: 23)
             ]}
         
         add(subview: favouriteButton) { (v, p) in [
-            v.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 5),
-            v.leadingAnchor.constraint(equalTo: favouriteButton.trailingAnchor, constant: 5),
-            v.heightAnchor.constraint(equalToConstant: 50),
-            v.widthAnchor.constraint(equalToConstant: 50)
+            v.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: -5),
+            v.leadingAnchor.constraint(equalTo: cosmosView.trailingAnchor, constant: 10),
+            v.heightAnchor.constraint(equalToConstant: 36),
+            v.widthAnchor.constraint(equalToConstant: 36)
             ]}
     }
     

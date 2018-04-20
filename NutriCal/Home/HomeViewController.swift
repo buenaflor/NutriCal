@@ -209,7 +209,8 @@ extension HomeViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let restaurantEndUserDetailViewController = RestaurantEndUserDetailViewController()
-        restaurantEndUserDetailViewController.restaurantIdentifier = self.restaurantIdentifiers[indexPath.row]
+        restaurantEndUserDetailViewController.model = restaurantIdentifiers[indexPath.row]
+        restaurantEndUserDetailViewController.configureWithModel(self.restaurantIdentifiers[indexPath.row])
         self.navigationController?.pushViewController(restaurantEndUserDetailViewController, animated: true)
     }
     

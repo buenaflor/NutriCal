@@ -42,11 +42,30 @@ class SectionHeaderView: UIView {
     }
 }
 
-class RestaurantEndUserDetailViewController: BaseRestaurantDetailViewController {
+class RestaurantEndUserDetailViewController: UIViewController, Configurable {
+    
+    var model: RestaurantIdentifier?
+    
+    func configureWithModel(_: RestaurantIdentifier) {
+        guard let restaurantIdentifier = model else { return }
+        self.firebaseManager.fetchMenu(restaurantIdentifier: restaurantIdentifier, completion: { (menu) in
+            menu.forEach { (menu) in
+                self.firebaseManager.fetchFood(restaurantIdentifier: restaurantIdentifier, menu: menu) { (internalMenu) in
+                    self.internalMenus.append(internalMenu)
+                    self.restaurantHeaderView.model = restaurantIdentifier
+                    self.restaurantHeaderView.configureWithModel(restaurantIdentifier)
+                    self.tableView.tableHeaderView = self.restaurantHeaderView
+                    self.tableView.reloadData()
+                }
+            }
+        })
+    }
     
     private var internalMenus = [InternalMenu]()
     
     private var isSearching = false
+    
+    private let firebaseManager = FirebaseManager()
     
     private lazy var searchController: UISearchController = {
         let searchController = UISearchController(searchResultsController: nil)
@@ -71,10 +90,10 @@ class RestaurantEndUserDetailViewController: BaseRestaurantDetailViewController 
     }()
     
     private let restaurantHeaderView: RestaurantDetailView = {
-        let view = RestaurantDetailView(frame: CGRect(x: 0, y: 0, width: 0, height: 200))
+        let view = RestaurantDetailView(frame: CGRect(x: 0, y: 0, width: 0, height: 100))
         return view
     }()
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -83,11 +102,6 @@ class RestaurantEndUserDetailViewController: BaseRestaurantDetailViewController 
     
     private func setupView() {
         self.view.backgroundColor = .white
-        
-        self.delegate = self
-        
-        restaurantHeaderView.configureWithModel(restaurantIdentifier!)
-        tableView.tableHeaderView = restaurantHeaderView
         
         let reviewsRightBarButtonItem = UIBarButtonItem(title: "Reviews", style: .plain, target: self, action: #selector(reviewsRightBarButtonItemTapped))
         self.navigationItem.rightBarButtonItem = reviewsRightBarButtonItem
@@ -99,14 +113,11 @@ class RestaurantEndUserDetailViewController: BaseRestaurantDetailViewController 
     private func configureConstraints() {
         
         self.view.add(subview: tableView) { (v, p) in [
-            v.topAnchor.constraint(equalTo: self.separatorLine.bottomAnchor, constant: 10),
+            v.topAnchor.constraint(equalTo: p.safeAreaLayoutGuide.topAnchor),
             v.leadingAnchor.constraint(equalTo: p.leadingAnchor),
             v.trailingAnchor.constraint(equalTo: p.trailingAnchor),
             v.bottomAnchor.constraint(equalTo: p.safeAreaLayoutGuide.bottomAnchor)
             ]}
-        
-        self.view.layoutIfNeeded()
-        self.imagePickerButton.layer.cornerRadius = self.imagePickerButton.frame.size.height / 2
     }
     
     @objc internal func priceButtonTapped(sender: CustomButton) {
@@ -121,7 +132,7 @@ class RestaurantEndUserDetailViewController: BaseRestaurantDetailViewController 
     
     @objc private func reviewsRightBarButtonItemTapped() {
         let reviewsViewController = ReviewsViewController()
-        reviewsViewController.restaurantIdentifier = self.restaurantIdentifier
+        reviewsViewController.restaurantIdentifier = self.model
         self.navigationController?.pushViewController(reviewsViewController, animated: true)
     }
 }

@@ -177,7 +177,7 @@ extension FavouritesViewController: UITableViewDelegate {
         switch self.currentType {
         case BaseType.restaurant:
             let restaurantEndUserDetailViewController = RestaurantEndUserDetailViewController()
-            restaurantEndUserDetailViewController.restaurantIdentifier = self.restaurantIdentifiers[indexPath.row]
+            restaurantEndUserDetailViewController.configureWithModel(self.restaurantIdentifiers[indexPath.row])
             self.navigationController?.pushViewController(restaurantEndUserDetailViewController, animated: true)
         default:
             break
