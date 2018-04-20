@@ -66,7 +66,13 @@ class RestaurantEndUserDetailViewController: BaseRestaurantDetailViewController 
         tableView.backgroundColor = UIColor.StandardMode.HomeBackground
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 110
+        tableView.bounces = false
         return tableView
+    }()
+    
+    private let restaurantHeaderView: RestaurantDetailView = {
+        let view = RestaurantDetailView(frame: CGRect(x: 0, y: 0, width: 0, height: 200))
+        return view
     }()
 
     override func viewDidLoad() {
@@ -79,6 +85,9 @@ class RestaurantEndUserDetailViewController: BaseRestaurantDetailViewController 
         self.view.backgroundColor = .white
         
         self.delegate = self
+        
+        restaurantHeaderView.configureWithModel(restaurantIdentifier!)
+        tableView.tableHeaderView = restaurantHeaderView
         
         let reviewsRightBarButtonItem = UIBarButtonItem(title: "Reviews", style: .plain, target: self, action: #selector(reviewsRightBarButtonItemTapped))
         self.navigationItem.rightBarButtonItem = reviewsRightBarButtonItem

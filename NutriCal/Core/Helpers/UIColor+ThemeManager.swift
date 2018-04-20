@@ -82,6 +82,8 @@ enum Theme: Int {
             return UIColor.red
         }
     }
+    
+    static let all: [Theme] = [ .darkTheme, .standardTheme ]
 }
 
 class ThemeManager {

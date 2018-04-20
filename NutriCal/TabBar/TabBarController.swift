@@ -28,7 +28,7 @@ class TabBarController: UITabBarController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        print(ApiPath.books)
         viewControllers = [ homeNav, mapNav ]
     }
 }

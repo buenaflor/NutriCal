@@ -30,7 +30,6 @@ enum ApiPath: CustomStringConvertible {
     }
 }
 
-
 class MyModelCell: UITableViewCell {
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {

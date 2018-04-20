@@ -16,20 +16,6 @@ enum BaseType {
     case food
 }
 
-extension BaseType {
-    
-    var cellType: UITableViewCell.Type {
-        switch self {
-        case .food:
-            return RestaurantEndUserDetailFoodCell.self
-        case .restaurant:
-            return ManageRestaurantCell.self
-        case .menu:
-            return UITableViewCell.self
-        }
-    }
-}
-
 class FavouritesViewController: UIViewController {
     
     // default type
@@ -59,7 +45,7 @@ class FavouritesViewController: UIViewController {
             firebaseManager.fetchRestaurantsWith(restaurantIDs: restaurantIDs, completion: { (restaurantIdentifiers) in
                 print(restaurantIdentifiers)
                 self.restaurantIdentifiers = restaurantIdentifiers
-                self.tableView.reloadData()
+                self.tableView.reloadSections(IndexSet(integer: 0), with: .automatic)
             })
         }
     }
@@ -106,17 +92,17 @@ class FavouritesViewController: UIViewController {
 
         alertController.addAction(UIAlertAction(title: "Restaurants", style: .default) { (_) in
             self.currentType = BaseType.restaurant
-            self.tableView.reloadData()
+            self.tableView.reloadSections(IndexSet(integer: 0), with: .automatic)
         })
         
         alertController.addAction(UIAlertAction(title: "Menus", style: .default) { (_) in
             self.currentType = BaseType.menu
-            self.tableView.reloadData()
+            self.tableView.reloadSections(IndexSet(integer: 0), with: .automatic)
         })
         
         alertController.addAction(UIAlertAction(title: "Food", style: .default) { (_) in
             self.currentType = BaseType.food
-            self.tableView.reloadData()
+            self.tableView.reloadSections(IndexSet(integer: 0), with: .automatic)
         })
         
         alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))

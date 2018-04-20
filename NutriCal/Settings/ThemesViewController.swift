@@ -10,7 +10,7 @@ import UIKit
 
 class ThemesViewController: UIViewController {
     
-    var themes = [Theme.darkTheme, Theme.standardTheme]
+    var themes = Theme.all
     
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
