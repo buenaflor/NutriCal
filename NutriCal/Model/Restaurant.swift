@@ -18,6 +18,15 @@ struct RestaurantIdentifier {
     let documentIdentifier: String
 }
 
+extension RestaurantIdentifier {
+    var address: String {
+        let city = self.restaurant.city
+        let postalCode = self.restaurant.postalCode
+        let street = self.restaurant.street
+        return "\(street), \(postalCode) \(city)"
+    }
+}
+
 struct Restaurant {
     let name: String
     let street: String

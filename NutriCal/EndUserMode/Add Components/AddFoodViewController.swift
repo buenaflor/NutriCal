@@ -29,7 +29,7 @@ class AddMenuFoodViewController: BaseImagePickerViewController {
         textField.placeholder = "Enter Name"
         textField.delegate = self
         textField.backgroundColor = .white
-        textField.addSeparatorLine(color: UIColor.StandardMode.TabBarColor)
+        textField.customizeSeparatorLine(color: UIColor.StandardMode.TabBarColor)
         return textField
     }()
     
@@ -38,7 +38,7 @@ class AddMenuFoodViewController: BaseImagePickerViewController {
         textField.placeholder = "Enter Description"
         textField.delegate = self
         textField.backgroundColor = .white
-        textField.addSeparatorLine(color: UIColor.StandardMode.TabBarColor)
+        textField.customizeSeparatorLine(color: UIColor.StandardMode.TabBarColor)
         return textField
     }()
     
@@ -47,7 +47,7 @@ class AddMenuFoodViewController: BaseImagePickerViewController {
         textField.placeholder = "Enter Price"
         textField.delegate = self
         textField.backgroundColor = .white
-        textField.addSeparatorLine(color: UIColor.StandardMode.TabBarColor)
+        textField.customizeSeparatorLine(color: UIColor.StandardMode.TabBarColor)
         return textField
     }()
     
@@ -56,7 +56,7 @@ class AddMenuFoodViewController: BaseImagePickerViewController {
         textField.placeholder = "Enter Total kCal"
         textField.delegate = self
         textField.backgroundColor = .white
-        textField.addSeparatorLine(color: UIColor.StandardMode.TabBarColor)
+        textField.customizeSeparatorLine(color: UIColor.StandardMode.TabBarColor)
         return textField
     }()
     

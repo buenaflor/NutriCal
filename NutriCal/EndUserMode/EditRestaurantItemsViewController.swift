@@ -71,7 +71,7 @@ class EditRestaurantItemsViewController: BaseImagePickerViewController {
         textField.placeholder = "Enter Restaurant Name"
         textField.delegate = self
         textField.backgroundColor = .white
-        textField.addSeparatorLine(color: .gray)
+        textField.customizeSeparatorLine(color: .gray)
         return textField
     }()
     

@@ -426,8 +426,8 @@
 				348DBBC2207B5A98001FD6F3 /* RestaurantEndUserDetailViewController.swift */,
 				348DBBC4207B698F001FD6F3 /* RestaurantEndUserDetailFoodCell.swift */,
 				34B8E482206E50890010ADDE /* RestaurantView.swift */,
-				34BAB22A2071851F00E39E8B /* EndUserLogin */,
 				3429253E2089D24E00FD4AC2 /* RestaurantDetailView.swift */,
+				34BAB22A2071851F00E39E8B /* EndUserLogin */,
 			);
 			name = EndUserMode;
 			path = EndUserLogin;

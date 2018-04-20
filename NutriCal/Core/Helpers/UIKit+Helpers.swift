@@ -97,6 +97,11 @@ extension Collection {
 
 // - MARK: UIView
 
+enum ViewResponse {
+    case add, delete
+}
+
+
 extension UIView {
     public func add(subview: UIView, createConstraints: (_ view: UIView, _ parent: UIView) -> ([NSLayoutConstraint])) {
         addSubview(subview)
@@ -131,8 +136,7 @@ extension UIView {
             ]}
     }
     
-    
-    public func addSeparatorLine(color: UIColor) {
+    public func customizeSeparatorLine(color: UIColor) {
         let view = UIView()
         view.backgroundColor = color
         
@@ -144,13 +148,15 @@ extension UIView {
         //            ]}
         
         self.add(subview: view) { (v, p) in [
-            v.topAnchor.constraint(equalTo: p.bottomAnchor, constant: 20),
+            v.bottomAnchor.constraint(equalTo: p.bottomAnchor),
             v.leadingAnchor.constraint(equalTo: p.leadingAnchor),
             v.trailingAnchor.constraint(equalTo: p.trailingAnchor),
-            v.heightAnchor.constraint(equalToConstant: 0.5)
+            v.heightAnchor.constraint(equalToConstant: 4)
             ]}
-        
+
     }
+    
+    
     
 }
 

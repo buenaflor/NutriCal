@@ -58,7 +58,7 @@ class AddRestaurantsViewController: UIViewController {
         textField.placeholder = "Enter Restaurant Name"
         textField.delegate = self
         textField.backgroundColor = .white
-        textField.addSeparatorLine(color: UIColor.StandardMode.TabBarColor)
+        textField.customizeSeparatorLine(color: UIColor.StandardMode.TabBarColor)
         return textField
     }()
     
